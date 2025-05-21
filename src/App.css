@@ -17,6 +17,17 @@ body {
   overflow: hidden;
 }
 
+.bat-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 30vh;
+  pointer-events: none;
+  z-index: 5;
+}
+
+
 /* 🔹 主要容器 */
 .container {
   position: relative;
