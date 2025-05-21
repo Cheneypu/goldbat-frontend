@@ -140,13 +140,12 @@ function App() {
   };
 
   const playProject = (key) => {
-    setIsPlaying(true);         // ✅ 播放控制交給 useEffect
+    setIsPlaying(true);         
     setCurrentProject(key);
     setCurrentText("");
     setIsDropdownOpen(false);
   };
 
-  // ✅ 音檔播放與字幕同步
   useEffect(() => {
     if (!currentProject || !isPlaying) return;
 
@@ -157,7 +156,7 @@ function App() {
           .play()
           .catch(() => alert("音訊播放失敗，請再點一次"));
       }
-    }, 100); // 等待 audio 元件掛載完畢
+    }, 100); 
 
     const checkSubtitle = () => {
       const audio = audioRef.current;
@@ -185,6 +184,14 @@ function App() {
 
   return (
     <div className="container">
+      {/* 🔹 加入蝙蝠角色圖片（有漂浮動畫） */}
+      <img
+        src="/bat.png"
+        alt="黃金蝙蝠"
+        className="bat-float"
+        style={{ width: 220, margin: "30px auto 10px", display: "block" }}
+      />
+
       {/* 🔽 下拉選單 */}
       <div className="dropdown">
         <button
@@ -216,7 +223,6 @@ function App() {
       {/* 🎧 音訊播放器 + 字幕 + 控制按鈕 */}
       {currentProject && (
         <>
-          {/* ✅ 這裡是最關鍵修正，加上 key={currentProject} */}
           <audio
             key={currentProject}
             ref={audioRef}
@@ -232,7 +238,7 @@ function App() {
           {/* ✅ 字幕區塊：播放中才顯示 */}
           {isPlaying && (
              <div className="subtitle-display">
-             <p>{currentText || "　"}</p>
+               <p>{currentText || "　"}</p>
              </div>
           )}
 
