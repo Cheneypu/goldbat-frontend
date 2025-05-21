@@ -120,6 +120,7 @@ const guideProjects = {
 
   }
 };
+<img src="/正面張嘴.png" alt="bat-mouth" className="bat-center" />
 
 function App() {
   const [currentProject, setCurrentProject] = useState(null);
