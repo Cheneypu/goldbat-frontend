@@ -1,7 +1,12 @@
+/* 🔹 全域 box-sizing 修正 */
+* {
+  box-sizing: border-box;
+}
+
 /* 🔹 基本樣式 */
 body {
   font-family: Arial, sans-serif;
-  background-color: #fae6f4; /* 粉紫色背景 */
+  background-color: #fae6f4;
   margin: 0;
   padding: 0;
   display: flex;
@@ -9,7 +14,7 @@ body {
   align-items: center;
   height: 100vh;
   position: relative;
-  overflow: hidden; /* ✅ 避免滾動條 */
+  overflow: hidden;
 }
 
 /* 🔹 主要容器 */
@@ -19,9 +24,9 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* ✅ 讓內容靠近畫面底部 */
+  justify-content: flex-end;
   align-items: center;
-  padding-bottom: 10vh; /* ✅ 適應不同螢幕大小 */
+  padding-bottom: 10vh;
 }
 
 /* 🔹 右上角的下拉選單 */
@@ -70,13 +75,13 @@ body {
   background: #f1f1f1;
 }
 
-/* 🔹 開始導覽按鈕（縮小 50% 並適應不同螢幕） */
+/* 🔹 開始導覽按鈕 */
 .start-button {
   background-color: #4b0082;
   color: white;
   border: none;
-  padding: 1.5vw 3vw; /* ✅ 讓大小縮小 50%，但保持適當間距 */
-  font-size: 1.5vw; /* ✅ 讓字體縮小 50%，但不會過小 */
+  padding: 1.5vw 3vw;
+  font-size: 1.5vw;
   border-radius: 25px;
   cursor: pointer;
   white-space: nowrap;
@@ -88,66 +93,76 @@ body {
   background-color: #6a0dad;
 }
 
-/* 🔹 字幕區塊（增加與按鈕的距離） */
-.subtitle-section {
+/* 🔹 字幕顯示條 */
+.subtitle-display {
   position: absolute;
-  bottom: 6%; /* ✅ 讓整體內容進一步向下移動 */
+  bottom: 12vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 1.8vw;
+  padding: 1.2vh 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0;
+  z-index: 999;
+}
+
+.subtitle-display p {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  font-size: inherit;
+  line-height: 1.4;
+}
+
+/* 🔹 控制按鈕區塊（字幕下方固定） */
+.control-buttons {
+  position: absolute;
+  bottom: 3vh; /* ✅ 從原本的 6vh 改為更接近底部 */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px; /* ✅ 保持字幕與按鈕間距 */
-}
-
-/* 🔹 字幕顯示框（確保橫向延伸，適應所有螢幕大小） */
-.subtitle-display {
-  background-color: rgba(0, 0, 0, 0.6); /* ✅ 透明 60% */
-  color: white;
-  padding: 0.8vh 2vw; /* ✅ 適當縮小高度，但保留間距 */
-  font-size: 1.8vw; /* ✅ 確保字體適中 */
-  border-radius: 0; /* ✅ 移除圓角，確保橫向延伸 */
-  width: 100vw; /* ✅ 讓字幕完全延伸到螢幕最左 & 最右 */
-  max-width: 100%; /* ✅ 確保大螢幕時不會變窄 */
-  text-align: center;
-  white-space: nowrap;
-  display: flex;
+  gap: 2vw;
   justify-content: center;
   align-items: center;
-  min-height: 2.5vh; /* ✅ 確保最小高度適中 */
-  max-height: 5vh; /* ✅ 限制最大高度，避免過大 */
-}
-/* 🔹 按鈕區塊（縮小間距，確保適應小螢幕） */
-.control-buttons {
-  display: flex;
-  gap: 1.5vw; /* ✅ 按鈕間距適當縮小 */
-  justify-content: center;
+  z-index: 998;
 }
 
-/* 🔹 修正按鈕形狀（確保不變形，適應不同螢幕） */
 .control-buttons button {
   background-color: #4b0082;
   color: white;
   border: none;
-  padding: 0.8vw 1.5vw; /* ✅ 讓按鈕大小適中 */
-  border-radius: 25px;
+  padding: 1.2vh 2vw;       /* ✅ 加大內距 */
+  font-size: 1.6vw;          /* ✅ 放大字體 */
+  border-radius: 25px;       /* ✅ 保持圓角一致 */
   cursor: pointer;
-  font-size: 1.2vw; /* ✅ 讓文字適應螢幕，但不會過大 */
   text-align: center;
   white-space: nowrap;
-  transition: all 0.3s;
+  transition: background-color 0.3s;
 }
+
 
 .control-buttons button:hover {
   background-color: #6a0dad;
 }
 
+/* 🔹 開始導覽按鈕區塊位置 */
+.start-section {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, 20%);
+  z-index: 10;
+}
 
-/* 🔹 📌 響應式設計（確保小螢幕不會過小） */
-@media (max-width: 900px) { /* ✅ 針對中等螢幕（平板）進行優化 */
+/* 🔹 響應式設計：中等螢幕 */
+@media (max-width: 900px) {
   .subtitle-display {
-    font-size: 2.5vw; /* ✅ 在中等螢幕上讓字幕變大一些 */
-    padding: 0.8vh 3vw;
+    font-size: 2.5vw;
   }
 
   .control-buttons button {
@@ -156,21 +171,17 @@ body {
   }
 }
 
-@media (max-width: 600px) { /* ✅ 針對小螢幕（手機）進行調整 */
-  .start-button, .control-buttons button {
-    font-size: 3vw; /* ✅ 在手機上字體稍微變大 */
-    padding: 2vw 4vw; /* ✅ 確保按鈕大小適中 */
-  }
-
-  .subtitle-section {
-    bottom: 4%; /* ✅ 在小螢幕上進一步向下移動 */
+/* 🔹 響應式設計：小螢幕 */
+@media (max-width: 600px) {
+  .start-button,
+  .control-buttons button {
+    font-size: 3vw; /* ✅ 比之前再大一些 */
+    padding: 2.5vw 5vw;
   }
 
   .subtitle-display {
-    font-size: 3.5vw; /* ✅ 在小螢幕上讓字幕變大一點 */
-    padding: 1vh 3vw; /* ✅ 保持適當上下間距，避免過長 */
-    width: 100vw; /* ✅ 讓字幕完全延伸 */
-    min-height: 3vh; /* ✅ 避免過長 */
-    max-height: 6vh; /* ✅ 控制最大高度 */
+    font-size: 3.5vw;
+    height: auto;
+    padding: 1vh 0;
   }
 }
