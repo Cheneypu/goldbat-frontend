@@ -95,10 +95,6 @@ body {
 
 /* 🔹 字幕顯示條 */
 .subtitle-display {
-  position: absolute;
-  bottom: 12vh;
-  left: 50%;
-  transform: translateX(-50%);
   width: 100vw;
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
@@ -108,7 +104,6 @@ body {
   justify-content: center;
   align-items: center;
   border-radius: 0;
-  z-index: 999;
 }
 
 .subtitle-display p {
@@ -120,35 +115,49 @@ body {
 }
 
 /* 🔹 控制按鈕區塊（字幕下方固定） */
+/* 🔹 控制按鈕區塊（字幕下方固定） */
 .control-buttons {
-  position: absolute;
-  bottom: 3vh; /* ✅ 從原本的 6vh 改為更接近底部 */
-  left: 50%;
-  transform: translateX(-50%);
+  margin-top: 2vh;             /* ✅ 與字幕條間距 */
   display: flex;
+  flex-wrap: wrap;
   gap: 2vw;
   justify-content: center;
   align-items: center;
-  z-index: 998;
 }
 
+/* ✅ 按鈕樣式一致性 */
 .control-buttons button {
   background-color: #4b0082;
   color: white;
   border: none;
-  padding: 1.2vh 2vw;       /* ✅ 加大內距 */
-  font-size: 1.6vw;          /* ✅ 放大字體 */
-  border-radius: 25px;       /* ✅ 保持圓角一致 */
+  padding: 1.5vh 2.5vw;   /* ✅ 稍微更大一點，兼顧觸控體驗 */
+  font-size: 1.6vw;
+  border-radius: 28px;
   cursor: pointer;
   text-align: center;
   white-space: nowrap;
   transition: background-color 0.3s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15); /* ✅ 微陰影強化立體感 */
 }
-
 
 .control-buttons button:hover {
   background-color: #6a0dad;
 }
+
+/* ✅ 手機樣式強化 */
+@media (max-width: 600px) {
+  .control-buttons {
+    bottom: 2vh;
+    padding: 0 4vw;
+  }
+
+  .control-buttons button {
+    font-size: 3.5vw;
+    padding: 2.5vw 6vw;
+    border-radius: 30px;
+  }
+}
+
 
 /* 🔹 開始導覽按鈕區塊位置 */
 .start-section {
@@ -173,15 +182,14 @@ body {
 
 /* 🔹 響應式設計：小螢幕 */
 @media (max-width: 600px) {
-  .start-button,
-  .control-buttons button {
-    font-size: 3vw; /* ✅ 比之前再大一些 */
-    padding: 2.5vw 5vw;
+  .control-buttons {
+    bottom: 2vh;
+    padding: 0 4vw;
   }
 
-  .subtitle-display {
+  .control-buttons button {
     font-size: 3.5vw;
-    height: auto;
-    padding: 1vh 0;
+    padding: 2.5vw 6vw;
+    border-radius: 30px;
   }
 }
