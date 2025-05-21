@@ -24,7 +24,7 @@ const guideProjects = {
       { start: 39.266, end: 42.200, text: "說不定你會看到我正在偷看你喔" }
     ]
   },
-  "第二件作品": {
+  "在大社國小的家": {
     audioUrl: "https://my-tts-audio.s3.ap-northeast-1.amazonaws.com/goldbat-habitat-final.mp3",
     subtitles: [
       { start: 0.166, end: 2.933, text: "我們金黃鼠耳蝠在春天到秋天時" },
@@ -57,7 +57,7 @@ const guideProjects = {
       { start: 69.466, end: 71.333, text: "看到我們倒掛的身影呦" }
     ]
   },
-  "第三件作品": {
+  "蝙蝠的生態角色": {
     audioUrl: "https://my-tts-audio.s3.ap-northeast-1.amazonaws.com/goldbat-role-final.mp3",
     subtitles: [
   { start: 0.166, end: 3.0, text: "晚上了，你們都躺在被窩裡睡覺" },
@@ -84,7 +84,7 @@ const guideProjects = {
 ]
 
   },
-  "第四件作品": {
+  "危機與保育": {
     audioUrl: "https://my-tts-audio.s3.ap-northeast-1.amazonaws.com/goldbat-closing-final.mp3",
     subtitles: [
   { start: 0.233, end: 1.333, text: "說了這麼多" },
@@ -125,36 +125,57 @@ function App() {
   const [currentProject, setCurrentProject] = useState(null);
   const [currentText, setCurrentText] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const audioRef = useRef(null);
   const rafRef = useRef(null);
 
   const projectKeys = Object.keys(guideProjects);
+  const firstProjectKey = projectKeys[0];
 
-  const playProject = (project) => {
-    setCurrentProject(project);
+  const handleStartGuide = () => {
+    setCurrentProject(firstProjectKey);
     setIsPlaying(true);
     setCurrentText("");
-    if (audioRef.current) {
-      audioRef.current.load();
-      audioRef.current.play();
-    }
   };
 
+  const playProject = (key) => {
+    setIsPlaying(true);         // ✅ 播放控制交給 useEffect
+    setCurrentProject(key);
+    setCurrentText("");
+    setIsDropdownOpen(false);
+  };
+
+  // ✅ 音檔播放與字幕同步
   useEffect(() => {
     if (!currentProject || !isPlaying) return;
+
+    const timeout = setTimeout(() => {
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current
+          .play()
+          .catch(() => alert("音訊播放失敗，請再點一次"));
+      }
+    }, 100); // 等待 audio 元件掛載完畢
 
     const checkSubtitle = () => {
       const audio = audioRef.current;
       const currentTime = audio.currentTime;
       const subs = guideProjects[currentProject].subtitles;
-      const current = subs.find(s => currentTime >= s.start && currentTime <= s.end);
+      const current = subs.find(
+        (s) => currentTime >= s.start && currentTime <= s.end
+      );
       setCurrentText(current ? current.text : "");
       rafRef.current = requestAnimationFrame(checkSubtitle);
     };
 
     rafRef.current = requestAnimationFrame(checkSubtitle);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [isPlaying, currentProject]);
+
+    return () => {
+      clearTimeout(timeout);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, [currentProject, isPlaying]);
 
   const handleEnded = () => {
     setIsPlaying(false);
@@ -163,23 +184,93 @@ function App() {
 
   return (
     <div className="container">
-      <h1>語音導覽系統</h1>
-      <div className="dropdown-menu">
-        {projectKeys.map((key) => (
-          <button key={key} onClick={() => playProject(key)}>
-            {key}
-          </button>
-        ))}
+      {/* 🔽 下拉選單 */}
+      <div className="dropdown">
+        <button
+          className="dropdown-button"
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+        >
+          單件介紹 🔽
+        </button>
+        {isDropdownOpen && (
+          <div className="dropdown-menu">
+            {projectKeys.map((key) => (
+              <button key={key} onClick={() => playProject(key)}>
+                {key}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
+      {/* 🔘 開始導覽 */}
+      {!currentProject && (
+        <div className="start-section">
+          <button className="start-button" onClick={handleStartGuide}>
+            開始導覽
+          </button>
+        </div>
+      )}
+
+      {/* 🎧 音訊播放器 + 字幕 + 控制按鈕 */}
       {currentProject && (
         <>
-          <audio ref={audioRef} onEnded={handleEnded}>
-            <source src={guideProjects[currentProject].audioUrl} type="audio/mpeg" />
+          {/* ✅ 這裡是最關鍵修正，加上 key={currentProject} */}
+          <audio
+            key={currentProject}
+            ref={audioRef}
+            onEnded={handleEnded}
+          >
+            <source
+              src={guideProjects[currentProject].audioUrl}
+              type="audio/mpeg"
+            />
             Your browser does not support the audio element.
           </audio>
-          <div className="subtitle-display">
-            <p>{currentText}</p>
+
+          {/* ✅ 字幕區塊：播放中才顯示 */}
+          {isPlaying && (
+             <div className="subtitle-display">
+             <p>{currentText || "　"}</p>
+             </div>
+          )}
+
+          {/* ✅ 控制按鈕區塊：永遠顯示 */}
+          <div className="control-buttons">
+            <button
+              onClick={() => {
+                if (audioRef.current) {
+                  audioRef.current.currentTime = 0;
+                  audioRef.current.play();
+                }
+              }}
+            >
+              再聽一遍
+            </button>
+
+            <button
+              onClick={() => {
+                if (audioRef.current) {
+                  if (audioRef.current.paused) {
+                    audioRef.current.play();
+                  } else {
+                    audioRef.current.pause();
+                  }
+                }
+              }}
+            >
+              暫停 / 播放
+            </button>
+
+            <button
+              onClick={() => {
+                const currentIndex = projectKeys.indexOf(currentProject);
+                const nextIndex = (currentIndex + 1) % projectKeys.length;
+                playProject(projectKeys[nextIndex]);
+              }}
+            >
+              播放下一篇
+            </button>
           </div>
         </>
       )}
