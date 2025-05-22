@@ -1,27 +1,40 @@
-/* 🔹 全域 box-sizing 修正 */
+/* 全域 box-sizing 修正 */
 * {
   box-sizing: border-box;
 }
 
-/* 🔹 基本樣式 */
+/* 基本樣式 */
 body {
   font-family: Arial, sans-serif;
   background-color: #fae6f4;
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  width: 100vw;
   position: relative;
   overflow: hidden;
 }
 
-/* 🔹 主要容器 */
+/* 蝙蝠主視覺背景（置中、夠大、層級最低） */
+.bat-background {
+  position: fixed;
+  left: 50%;
+  top: 38vh;           /* 這裡用vh更穩定，舉例40vh，依照你的設計可 35vh～42vh之間微調 */
+  transform: translate(-50%, -50%);
+  width: 500px;
+  max-width: 85vw;
+  opacity: 1;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+
+/* 主要容器 */
 .container {
   position: relative;
-  width: 100%;
-  height: 100vh;
+  width: 100vw;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -29,12 +42,13 @@ body {
   padding-bottom: 10vh;
 }
 
-/* 🔹 右上角的下拉選單 */
+/* 右上角下拉選單 */
 .dropdown {
   position: fixed;
   top: 10px;
   right: 10px;
   text-align: right;
+  z-index: 20;
 }
 
 .dropdown-button {
@@ -59,6 +73,7 @@ body {
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  z-index: 30;
 }
 
 .dropdown-menu button {
@@ -75,7 +90,7 @@ body {
   background: #f1f1f1;
 }
 
-/* 🔹 開始導覽按鈕 */
+/* 開始導覽按鈕 */
 .start-button {
   background-color: #4b0082;
   color: white;
@@ -87,18 +102,16 @@ body {
   white-space: nowrap;
   text-align: center;
   transition: all 0.3s;
+  z-index: 15;
+  position: relative;
 }
 
 .start-button:hover {
   background-color: #6a0dad;
 }
 
-/* 🔹 字幕顯示條 */
+/* 字幕顯示條 */
 .subtitle-display {
-  position: absolute;
-  bottom: 12vh;
-  left: 50%;
-  transform: translateX(-50%);
   width: 100vw;
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
@@ -108,7 +121,10 @@ body {
   justify-content: center;
   align-items: center;
   border-radius: 0;
-  z-index: 999;
+  position: fixed;
+  bottom: 90px;
+  left: 0;
+  z-index: 10;
 }
 
 .subtitle-display p {
@@ -119,69 +135,331 @@ body {
   line-height: 1.4;
 }
 
-/* 🔹 控制按鈕區塊（字幕下方固定） */
+/* 控制按鈕區塊（字幕下方固定） */
 .control-buttons {
-  position: absolute;
-  bottom: 3vh; /* ✅ 從原本的 6vh 改為更接近底部 */
+  position: fixed;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
+  margin-top: 2vh;
   display: flex;
+  flex-wrap: nowrap;    /* ✅ 只要 nowrap！ */
   gap: 2vw;
   justify-content: center;
   align-items: center;
-  z-index: 998;
+  z-index: 10;
 }
 
+/* 按鈕樣式一致性 */
 .control-buttons button {
   background-color: #4b0082;
   color: white;
   border: none;
-  padding: 1.2vh 2vw;       /* ✅ 加大內距 */
-  font-size: 1.6vw;          /* ✅ 放大字體 */
-  border-radius: 25px;       /* ✅ 保持圓角一致 */
+  padding: 1.5vh 2.5vw;
+  font-size: 1.6vw;
+  border-radius: 28px;
   cursor: pointer;
   text-align: center;
   white-space: nowrap;
   transition: background-color 0.3s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 11;
 }
-
 
 .control-buttons button:hover {
   background-color: #6a0dad;
 }
 
-/* 🔹 開始導覽按鈕區塊位置 */
-.start-section {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, 20%);
-  z-index: 10;
+/* 手機樣式強化 */
+@media (max-width: 600px) {
+  .control-buttons {
+    bottom: 2vh;
+    padding: 0 4vw;
+  }
+  .control-buttons button {
+    font-size: 3.5vw;
+    padding: 2.5vw 6vw;
+    border-radius: 30px;
+  }
 }
 
-/* 🔹 響應式設計：中等螢幕 */
+/* 開始導覽按鈕區塊位置 */
+.start-section {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 200px);
+  /* 這行做水平微調！ */
+  transform: translate(-50%, 0) translateX(60px);
+  z-index: 15;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+/* 響應式設計：中等螢幕 */
 @media (max-width: 900px) {
   .subtitle-display {
     font-size: 2.5vw;
   }
-
+  .start-section {
+    transform: translate(-50%, 0) translateX(25px); /* 手機微調即可 */
+  }
   .control-buttons button {
     font-size: 2.5vw;
     padding: 1.5vw 3vw;
   }
 }
-
-/* 🔹 響應式設計：小螢幕 */
 @media (max-width: 600px) {
-  .start-button,
-  .control-buttons button {
-    font-size: 3vw; /* ✅ 比之前再大一些 */
-    padding: 2.5vw 5vw;
-  }
-
-  .subtitle-display {
-    font-size: 3.5vw;
-    height: auto;
-    padding: 1vh 0;
+  .start-section {
+    transform: translate(-50%, 0) translateX(20px); /* 手機微調即可 */
   }
 }
+.intro-video-overlay {
+  position: fixed;
+  left: 0; top: 0; width: 100vw; height: 100vh;
+  background: #000;
+  z-index: 9999;  /* 一定要最高，蓋住一切 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.intro-video {
+  width: 100vw;
+  height: 100vh;
+  object-fit: contain;
+  background: #000;
+}
+@media (max-aspect-ratio: 4/3) {
+  .intro-video {
+    object-fit: cover;
+  }
+}
+.intro-ready-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: #000000cc; /* 半透明黑遮罩 */
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ready-button {
+  background: #4b0082;
+  color: #fff;
+  font-size: 2.2vw;
+  padding: 2vw 4vw;
+  border-radius: 30px;
+  border: none;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.ready-button:hover {
+  background: #6a0dad;
+}
+
+.intro-bg-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ready-button {
+  background: #4b0082;
+  color: #fff;
+  font-size: 2.2vw;
+  padding: 2vw 4vw;
+  border-radius: 30px;
+  border: none;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.ready-button:hover {
+  background: #6a0dad;
+}
+
+.intro-bg-overlay {
+  display: flex;
+  flex-direction: column;    /* 讓內容垂直排 */
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;         /* 全螢幕置中 */
+  width: 100vw;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.intro-tip {
+  color: #fff;
+  font-size: 1.18rem;
+  margin-top: 18px;
+  text-align: center;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.23);
+  letter-spacing: 1.5px;
+  /* 你想要可以再加 padding、背景等 */
+}
+
+.faq-fab {
+  position: fixed;
+  left: 26px;
+  bottom: 10px;
+  width: 78px;        /* 變寬！ */
+  height: 70px;
+  background: #666;
+  color: #fff;
+  border-radius: 16px;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  border: none;
+  z-index: 50;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  white-space: normal;          /* 允許換行 */
+  word-break: keep-all;
+  text-align: center;
+  line-height: 1.2;
+  padding: 0 4px;
+}
+.faq-fab:hover {
+  background: #444;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.22);
+}
+
+/* FAQ 彈出視窗 */
+.faq-popup {
+  position: fixed;
+  left: 50%;
+  /* bottom 要比 subtitle-display 的 bottom 再高一點，比如 bottom: 140px; */
+  bottom: 160px;
+  transform: translateX(-50%);
+  min-width: 240px;
+  width: 400px;
+  max-width: 90vw;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+  z-index: 90;
+  padding: 8px 26px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+.faq-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  width: 100%;
+}
+
+.faq-popup input {
+  flex: 1 1 0%;
+  font-size: 1rem;
+  border-radius: 9px;
+  border: 1px solid #aaa;
+  padding: 6px 8px;
+  outline: none;
+  min-width: 0;
+  height: 38px;      /* 與按鈕對齊 */
+  margin-right: 0;
+}
+
+.faq-submit {
+  background: #4b0082;
+  color: #fff;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  padding: 0 16px;
+  cursor: pointer;
+  transition: background .18s;
+  font-weight: bold;
+  height: 38px;
+  min-width: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0;
+}
+
+.faq-submit:hover {
+  background: #743bd3;
+}
+
+/* X 按鈕：右上角完全靠內，尺寸小，紅色圓形 */
+.faq-close {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  width: 22px;
+  height: 22px;
+  background: #ff4545;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+  z-index: 99;
+  padding: 0;
+  line-height: 1;
+  transition: background .18s;
+}
+
+.faq-close:hover {
+  background: #c82020;
+}
+
+/* 手機自適應 */
+@media (max-width: 600px) {
+  .faq-popup {
+    min-width: unset;
+    width: 94vw;
+    max-width: 98vw;
+    padding: 12px 2vw 12px 2vw;
+    bottom: 140px; /* 手機可比 desktop 再往上貼 */
+  }
+}
+  .faq-popup input {
+    font-size: 0.98rem;
+    height: 32px;
+  }
+  .faq-submit {
+    font-size: 0.97rem;
+    height: 32px;
+    min-width: 44px;
+    padding: 0 10px;
+  }
+  .faq-close {
+    width: 18px;
+    height: 18px;
+    font-size: 0.9rem;
+    top: 3px;
+    right: 3px;
+  }

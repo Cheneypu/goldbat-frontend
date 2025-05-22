@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
+import FAQ from "./FAQ.json"; 
 
 const guideProjects = {
   "黃金鼠尾蝠是誰": {
@@ -122,6 +123,34 @@ const guideProjects = {
 };
 
 function App() {
+  const [showReady, setShowReady] = useState(true);
+  const [showIntro, setShowIntro] = useState(false);
+  const audioIntroRef = useRef(null);
+
+  // 嘴型動畫狀態
+  const [batMouthOpen, setBatMouthOpen] = useState(false);
+  const mouthTimeoutRef = useRef();
+
+  // FAQ/問答彈窗
+  const [showFAQ, setShowFAQ] = useState(false);
+  const [faqInput, setFaqInput] = useState("");
+  const [faqText, setFaqText] = useState(""); // FAQ字幕專用
+
+  // 響應式 intro 影片偵測
+  const [isPortrait, setIsPortrait] = useState(window.innerHeight > window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const introVideo = isPortrait
+    ? "/media/蝙蝠直的.mp4"
+    : "/media/蝙蝠橫的.mp4";
+  const introAudio = "/media/環境音.mp3";
+  const introBg = "/media/背景.png";
+
+  // --------- 語音導覽狀態 ---------
   const [currentProject, setCurrentProject] = useState(null);
   const [currentText, setCurrentText] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
@@ -132,146 +161,306 @@ function App() {
   const projectKeys = Object.keys(guideProjects);
   const firstProjectKey = projectKeys[0];
 
+  // 嘴型動畫控制
+  useEffect(() => {
+    clearTimeout(mouthTimeoutRef.current);
+    if (!currentText && !faqText) {
+      setBatMouthOpen(false);
+      return;
+    }
+    if ((isPlaying && currentText) || faqText) {
+      function animateMouth() {
+        setBatMouthOpen(v => !v);
+        const randomDelay = Math.floor(Math.random() * 170) + 180;
+        mouthTimeoutRef.current = setTimeout(animateMouth, randomDelay);
+      }
+      animateMouth();
+      return () => clearTimeout(mouthTimeoutRef.current);
+    }
+    return () => clearTimeout(mouthTimeoutRef.current);
+  }, [isPlaying, currentText, faqText]);
+
+  // 語音導覽「開始」按鈕
   const handleStartGuide = () => {
+    setFaqText(""); // FAQ 字幕清空
     setCurrentProject(firstProjectKey);
     setIsPlaying(true);
     setCurrentText("");
+    if (audioIntroRef.current) {
+      audioIntroRef.current.pause();
+      audioIntroRef.current.currentTime = 0;
+    }
+    setTimeout(() => {
+      if (audioRef.current) audioRef.current.play();
+    }, 100);
   };
 
+  // 切換段落
   const playProject = (key) => {
-    setIsPlaying(true);         // ✅ 播放控制交給 useEffect
+    setFaqText(""); // FAQ 字幕清空
+    setIsPlaying(true);
     setCurrentProject(key);
     setCurrentText("");
     setIsDropdownOpen(false);
+    setTimeout(() => {
+      if (audioRef.current) audioRef.current.play();
+    }, 100);
   };
 
-  // ✅ 音檔播放與字幕同步
+  // FAQ搜尋並 TTS 回覆
+  function handleFaqSubmit() {
+    if (!faqInput.trim()) return;
+    // 問 FAQ 時自動暫停主流程語音
+    if (audioRef.current && !audioRef.current.paused) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+    const keyword = faqInput.trim();
+    const found = FAQ.find(
+      qa =>
+        qa.q.toLowerCase().includes(keyword.toLowerCase()) ||
+        (qa.a && qa.a.toLowerCase().includes(keyword.toLowerCase()))
+    );
+    let answer = found ? found.a : "很抱歉，暫時沒有找到相關答案。";
+    setFaqText(answer); // 只設定 FAQ 字幕
+    setShowFAQ(false);
+    setFaqInput("");
+    speakText(answer, () => setFaqText("")); // TTS 結束後自動清空
+  }
+
+  // 字幕偵測
   useEffect(() => {
-    if (!currentProject || !isPlaying) return;
-
-    const timeout = setTimeout(() => {
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current
-          .play()
-          .catch(() => alert("音訊播放失敗，請再點一次"));
-      }
-    }, 100); // 等待 audio 元件掛載完畢
-
+    if (!currentProject) return;
     const checkSubtitle = () => {
       const audio = audioRef.current;
-      const currentTime = audio.currentTime;
+      const currentTime = audio ? audio.currentTime : 0;
       const subs = guideProjects[currentProject].subtitles;
       const current = subs.find(
         (s) => currentTime >= s.start && currentTime <= s.end
       );
-      setCurrentText(current ? current.text : "");
+      // 只有在沒有 FAQ 字幕時，才切換主流程字幕
+      if (!faqText) setCurrentText(current ? current.text : "");
       rafRef.current = requestAnimationFrame(checkSubtitle);
     };
-
     rafRef.current = requestAnimationFrame(checkSubtitle);
-
     return () => {
-      clearTimeout(timeout);
       cancelAnimationFrame(rafRef.current);
     };
-  }, [currentProject, isPlaying]);
+  }, [currentProject, faqText]);
 
+  // FAQ 回覆 TTS (瀏覽器原生語音)
+  function speakText(text, onEnd) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utter = new window.SpeechSynthesisUtterance(text);
+    utter.lang = "zh-TW"; // 語言依內容調整
+    if (onEnd) {
+      utter.onend = onEnd;
+    }
+    window.speechSynthesis.speak(utter);
+  }
+
+  // 音檔播完
   const handleEnded = () => {
     setIsPlaying(false);
-    setCurrentText("");
   };
 
   return (
     <div className="container">
-      {/* 🔽 下拉選單 */}
-      <div className="dropdown">
-        <button
-          className="dropdown-button"
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        >
-          單件介紹 🔽
-        </button>
-        {isDropdownOpen && (
-          <div className="dropdown-menu">
-            {projectKeys.map((key) => (
-              <button key={key} onClick={() => playProject(key)}>
-                {key}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* 🔘 開始導覽 */}
-      {!currentProject && (
-        <div className="start-section">
-          <button className="start-button" onClick={handleStartGuide}>
-            開始導覽
+      {/* 1. 初始狀態：背景圖＋按鈕 */}
+      {showReady && (
+        <div className="intro-bg-overlay" style={{ backgroundImage: `url(${introBg})` }}>
+          <button
+            className="ready-button"
+            onClick={() => {
+              setShowReady(false);
+              setShowIntro(true);
+            }}
+          >
+            我準備啟程
           </button>
+          <p className="intro-tip">請開啟聲音，讓我來向你介紹！</p>
         </div>
       )}
 
-      {/* 🎧 音訊播放器 + 字幕 + 控制按鈕 */}
-      {currentProject && (
-        <>
-          {/* ✅ 這裡是最關鍵修正，加上 key={currentProject} */}
-          <audio
-            key={currentProject}
-            ref={audioRef}
-            onEnded={handleEnded}
-          >
-            <source
-              src={guideProjects[currentProject].audioUrl}
-              type="audio/mpeg"
-            />
-            Your browser does not support the audio element.
-          </audio>
+      {/* 2. 播放影片，影片結束才開始播放音樂 */}
+      {showIntro && (
+        <div className="intro-video-overlay">
+          <video
+            src={introVideo}
+            autoPlay
+            playsInline
+            onEnded={() => {
+              setShowIntro(false);
+              setTimeout(() => {
+                if (audioIntroRef.current) {
+                  audioIntroRef.current.currentTime = 0;
+                  audioIntroRef.current.muted = false;
+                  audioIntroRef.current.volume = 1;
+                  audioIntroRef.current.play().catch(e => {
+                    alert("音效播放失敗: " + e.message);
+                  });
+                }
+              }, 100);
+            }}
+            className="intro-video"
+            controls={false}
+          />
+        </div>
+      )}
 
-          {/* ✅ 字幕區塊：播放中才顯示 */}
-          {isPlaying && (
-             <div className="subtitle-display">
-             <p>{currentText || "　"}</p>
-             </div>
+      {/* 3. intro 音樂元件 */}
+      <audio
+        ref={audioIntroRef}
+        src={introAudio}
+        loop
+        style={{ display: "none" }}
+      />
+
+      {/* 4. 主頁內容 */}
+      {!showReady && !showIntro && (
+        <>
+          {/* 主視覺大蝙蝠圖（嘴型動畫，上移一些） */}
+          <img
+            src={
+              (faqText || currentText)
+                ? (batMouthOpen ? "/media/bat.png" : "/media/閉嘴.png")
+                : "/media/閉嘴.png"
+            }
+            alt="黃金蝙蝠"
+            className="bat-background"
+          />
+
+          {/* 右上角下拉選單 */}
+          <div className="dropdown">
+            <button
+              className="dropdown-button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              單件介紹 🔽
+            </button>
+            {isDropdownOpen && (
+              <div className="dropdown-menu">
+                {projectKeys.map((key) => (
+                  <button key={key} onClick={() => playProject(key)}>
+                    {key}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 開啟導覽按鈕 */}
+          {!currentProject && (
+            <div className="control-buttons">
+              <button className="start-button" onClick={handleStartGuide}>
+                開啟導覽
+              </button>
+            </div>
           )}
 
-          {/* ✅ 控制按鈕區塊：永遠顯示 */}
-          <div className="control-buttons">
-            <button
-              onClick={() => {
-                if (audioRef.current) {
-                  audioRef.current.currentTime = 0;
-                  audioRef.current.play();
-                }
-              }}
-            >
-              再聽一遍
-            </button>
+          {/* 音訊播放器 + 控制按鈕 */}
+          {currentProject && (
+            <>
+              <audio
+                key={currentProject}
+                ref={audioRef}
+                onEnded={handleEnded}
+              >
+                <source
+                  src={guideProjects[currentProject].audioUrl}
+                  type="audio/mpeg"
+                />
+                Your browser does not support the audio element.
+              </audio>
+              <div className="control-buttons">
+                <button
+                  onClick={() => {
+                    setFaqText(""); // 清空 FAQ 字幕
+                    if (audioRef.current) {
+                      audioRef.current.currentTime = 0;
+                      audioRef.current.play();
+                      setIsPlaying(true);
+                    }
+                  }}
+                >
+                  再聽一遍
+                </button>
+                <button
+                  onClick={() => {
+                    setFaqText(""); // 清空 FAQ 字幕
+                    if (audioRef.current) {
+                      if (audioRef.current.paused) {
+                        audioRef.current.play();
+                        setIsPlaying(true);
+                      } else {
+                        audioRef.current.pause();
+                        setIsPlaying(false);
+                      }
+                    }
+                  }}
+                >
+                  暫停 / 播放
+                </button>
+                <button
+                  onClick={() => {
+                    setFaqText(""); // 清空 FAQ 字幕
+                    const currentIndex = projectKeys.indexOf(currentProject);
+                    const nextIndex = (currentIndex + 1) % projectKeys.length;
+                    playProject(projectKeys[nextIndex]);
+                  }}
+                >
+                  播放下一篇
+                </button>
+              </div>
+            </>
+          )}
 
-            <button
-              onClick={() => {
-                if (audioRef.current) {
-                  if (audioRef.current.paused) {
-                    audioRef.current.play();
-                  } else {
-                    audioRef.current.pause();
-                  }
-                }
-              }}
-            >
-              暫停 / 播放
-            </button>
+          {/* FAQ字幕優先顯示（與導覽無關，永遠單獨渲染） */}
+          {(faqText || currentText) && (
+            <div className="subtitle-display">
+              <p>{faqText || currentText}</p>
+            </div>
+          )}
 
-            <button
-              onClick={() => {
-                const currentIndex = projectKeys.indexOf(currentProject);
-                const nextIndex = (currentIndex + 1) % projectKeys.length;
-                playProject(projectKeys[nextIndex]);
-              }}
-            >
-              播放下一篇
-            </button>
-          </div>
+          {/* FAQ 按鈕 */}
+          <button className="faq-fab" onClick={() => setShowFAQ(true)}>
+            我還<br />想問
+          </button>
+
+          {/* FAQ 彈窗 */}
+          {showFAQ && (
+            <div className="faq-popup">
+              <button
+                className="faq-close"
+                onClick={() => {
+                  setShowFAQ(false);
+                  setFaqInput("");
+                }}
+                title="關閉"
+              >
+                ✕
+              </button>
+              <div className="faq-row">
+                <input
+                  id="faq-q"
+                  value={faqInput}
+                  onChange={e => setFaqInput(e.target.value)}
+                  placeholder="請輸入你的問題"
+                  onKeyDown={e => {
+                    if (e.key === "Enter") handleFaqSubmit();
+                  }}
+                  autoFocus
+                />
+                <button
+                  className="faq-submit"
+                  onClick={handleFaqSubmit}
+                >
+                  送出
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>
