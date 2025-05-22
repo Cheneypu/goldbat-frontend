@@ -121,7 +121,6 @@ const guideProjects = {
 
   }
 };
-
 function App() {
   const [showReady, setShowReady] = useState(true);
   const [showIntro, setShowIntro] = useState(false);
@@ -164,6 +163,7 @@ function App() {
   // 嘴型動畫控制
   useEffect(() => {
     clearTimeout(mouthTimeoutRef.current);
+    // FAQ或主導覽有字幕時才動嘴
     if (!currentText && !faqText) {
       setBatMouthOpen(false);
       return;
@@ -350,9 +350,9 @@ function App() {
             )}
           </div>
 
-          {/* 開啟導覽按鈕 */}
+          {/* 開啟導覽（這時結束音樂） */}
           {!currentProject && (
-            <div className="control-buttons">
+            <div className="start-section">
               <button className="start-button" onClick={handleStartGuide}>
                 開啟導覽
               </button>

@@ -19,7 +19,7 @@ body {
 .bat-background {
   position: fixed;
   left: 50%;
-  top: 38vh;           /* 這裡用vh更穩定，舉例40vh，依照你的設計可 35vh～42vh之間微調 */
+  top: 38vh;           /* 微調上下位置建議 35~42 之間 */
   transform: translate(-50%, -50%);
   width: 500px;
   max-width: 85vw;
@@ -28,7 +28,6 @@ body {
   pointer-events: none;
   user-select: none;
 }
-
 
 /* 主要容器 */
 .container {
@@ -50,7 +49,6 @@ body {
   text-align: right;
   z-index: 20;
 }
-
 .dropdown-button {
   background-color: #ddd;
   color: #333;
@@ -60,7 +58,6 @@ body {
   cursor: pointer;
   border-radius: 5px;
 }
-
 .dropdown-menu {
   position: absolute;
   right: 0;
@@ -75,7 +72,6 @@ body {
   flex-direction: column;
   z-index: 30;
 }
-
 .dropdown-menu button {
   background: none;
   border: none;
@@ -85,7 +81,6 @@ body {
   cursor: pointer;
   font-size: 14px;
 }
-
 .dropdown-menu button:hover {
   background: #f1f1f1;
 }
@@ -105,7 +100,6 @@ body {
   z-index: 15;
   position: relative;
 }
-
 .start-button:hover {
   background-color: #6a0dad;
 }
@@ -126,7 +120,6 @@ body {
   left: 0;
   z-index: 10;
 }
-
 .subtitle-display p {
   margin: 0;
   padding: 0;
@@ -143,14 +136,12 @@ body {
   transform: translateX(-50%);
   margin-top: 2vh;
   display: flex;
-  flex-wrap: nowrap;    /* ✅ 只要 nowrap！ */
+  flex-wrap: nowrap;
   gap: 2vw;
   justify-content: center;
   align-items: center;
   z-index: 10;
 }
-
-/* 按鈕樣式一致性 */
 .control-buttons button {
   background-color: #4b0082;
   color: white;
@@ -166,12 +157,20 @@ body {
   position: relative;
   z-index: 11;
 }
-
 .control-buttons button:hover {
   background-color: #6a0dad;
 }
 
-/* 手機樣式強化 */
+/* 響應式設計：中等/小螢幕 */
+@media (max-width: 900px) {
+  .subtitle-display {
+    font-size: 2.5vw;
+  }
+  .control-buttons button {
+    font-size: 2.5vw;
+    padding: 1.5vw 3vw;
+  }
+}
 @media (max-width: 600px) {
   .control-buttons {
     bottom: 2vh;
@@ -182,6 +181,9 @@ body {
     padding: 2.5vw 6vw;
     border-radius: 30px;
   }
+  .start-section {
+    transform: translate(-50%, 0) translateX(20px);
+  }
 }
 
 /* 開始導覽按鈕區塊位置 */
@@ -189,7 +191,6 @@ body {
   position: absolute;
   left: 50%;
   top: calc(50% + 200px);
-  /* 這行做水平微調！ */
   transform: translate(-50%, 0) translateX(60px);
   z-index: 15;
   width: 100vw;
@@ -198,130 +199,14 @@ body {
   align-items: center;
 }
 
+/* 影片遮罩 & 按鈕通用樣式等全部保留原本 */
 
-
-/* 響應式設計：中等螢幕 */
-@media (max-width: 900px) {
-  .subtitle-display {
-    font-size: 2.5vw;
-  }
-  .start-section {
-    transform: translate(-50%, 0) translateX(25px); /* 手機微調即可 */
-  }
-  .control-buttons button {
-    font-size: 2.5vw;
-    padding: 1.5vw 3vw;
-  }
-}
-@media (max-width: 600px) {
-  .start-section {
-    transform: translate(-50%, 0) translateX(20px); /* 手機微調即可 */
-  }
-}
-.intro-video-overlay {
-  position: fixed;
-  left: 0; top: 0; width: 100vw; height: 100vh;
-  background: #000;
-  z-index: 9999;  /* 一定要最高，蓋住一切 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.intro-video {
-  width: 100vw;
-  height: 100vh;
-  object-fit: contain;
-  background: #000;
-}
-@media (max-aspect-ratio: 4/3) {
-  .intro-video {
-    object-fit: cover;
-  }
-}
-.intro-ready-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background: #000000cc; /* 半透明黑遮罩 */
-  z-index: 9999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.ready-button {
-  background: #4b0082;
-  color: #fff;
-  font-size: 2.2vw;
-  padding: 2vw 4vw;
-  border-radius: 30px;
-  border: none;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-  cursor: pointer;
-  transition: background .2s;
-}
-
-.ready-button:hover {
-  background: #6a0dad;
-}
-
-.intro-bg-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  z-index: 9999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.ready-button {
-  background: #4b0082;
-  color: #fff;
-  font-size: 2.2vw;
-  padding: 2vw 4vw;
-  border-radius: 30px;
-  border: none;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-  cursor: pointer;
-  transition: background .2s;
-}
-
-.ready-button:hover {
-  background: #6a0dad;
-}
-
-.intro-bg-overlay {
-  display: flex;
-  flex-direction: column;    /* 讓內容垂直排 */
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;         /* 全螢幕置中 */
-  width: 100vw;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.intro-tip {
-  color: #fff;
-  font-size: 1.18rem;
-  margin-top: 18px;
-  text-align: center;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.23);
-  letter-spacing: 1.5px;
-  /* 你想要可以再加 padding、背景等 */
-}
-
+/* FAQ 按鈕（左下角） */
 .faq-fab {
   position: fixed;
   left: 26px;
   bottom: 10px;
-  width: 78px;        /* 變寬！ */
+  width: 78px;
   height: 70px;
   background: #666;
   color: #fff;
@@ -335,7 +220,7 @@ body {
   z-index: 50;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
-  white-space: normal;          /* 允許換行 */
+  white-space: normal;
   word-break: keep-all;
   text-align: center;
   line-height: 1.2;
@@ -350,8 +235,7 @@ body {
 .faq-popup {
   position: fixed;
   left: 50%;
-  /* bottom 要比 subtitle-display 的 bottom 再高一點，比如 bottom: 140px; */
-  bottom: 160px;
+  bottom: 160px;   /* 比 subtitle-display 的 bottom 再高一點 */
   transform: translateX(-50%);
   min-width: 240px;
   width: 400px;
@@ -366,7 +250,6 @@ body {
   align-items: stretch;
   box-sizing: border-box;
 }
-
 .faq-row {
   display: flex;
   align-items: center;
@@ -374,7 +257,6 @@ body {
   margin: 0;
   width: 100%;
 }
-
 .faq-popup input {
   flex: 1 1 0%;
   font-size: 1rem;
@@ -383,10 +265,9 @@ body {
   padding: 6px 8px;
   outline: none;
   min-width: 0;
-  height: 38px;      /* 與按鈕對齊 */
+  height: 38px;
   margin-right: 0;
 }
-
 .faq-submit {
   background: #4b0082;
   color: #fff;
@@ -404,11 +285,9 @@ body {
   justify-content: center;
   margin-left: 0;
 }
-
 .faq-submit:hover {
   background: #743bd3;
 }
-
 /* X 按鈕：右上角完全靠內，尺寸小，紅色圓形 */
 .faq-close {
   position: absolute;
@@ -431,21 +310,19 @@ body {
   line-height: 1;
   transition: background .18s;
 }
-
 .faq-close:hover {
   background: #c82020;
 }
 
-/* 手機自適應 */
+/* 手機自適應 FAQ */
 @media (max-width: 600px) {
   .faq-popup {
     min-width: unset;
     width: 94vw;
     max-width: 98vw;
     padding: 12px 2vw 12px 2vw;
-    bottom: 140px; /* 手機可比 desktop 再往上貼 */
+    bottom: 140px;
   }
-}
   .faq-popup input {
     font-size: 0.98rem;
     height: 32px;
@@ -463,3 +340,4 @@ body {
     top: 3px;
     right: 3px;
   }
+}
