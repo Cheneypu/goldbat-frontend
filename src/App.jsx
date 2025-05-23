@@ -282,18 +282,24 @@ function App() {
             autoPlay
             playsInline
             onEnded={() => {
-              setShowIntro(false);
-              setTimeout(() => {
-                if (audioIntroRef.current) {
-                  audioIntroRef.current.currentTime = 0;
-                  audioIntroRef.current.muted = false;
-                  audioIntroRef.current.volume = 1;
-                  audioIntroRef.current.play().catch(e => {
-                    alert("音效播放失敗: " + e.message);
-                  });
-                }
-              }, 100);
-            }}
+  setShowIntro(false);
+
+  // ✅ 設定背景圖為 bg1.png
+  document.body.style.background = "url('/media/bg3.png') no-repeat center center fixed";
+  document.body.style.backgroundSize = "cover";
+
+  setTimeout(() => {
+    if (audioIntroRef.current) {
+      audioIntroRef.current.currentTime = 0;
+      audioIntroRef.current.muted = false;
+      audioIntroRef.current.volume = 1;
+      audioIntroRef.current.play().catch(e => {
+        alert("音效播放失敗: " + e.message);
+      });
+    }
+  }, 100);
+}}
+
             className={`intro-video ${isPortrait ? "cover" : "contain"}`}
             controls={false}
           />
