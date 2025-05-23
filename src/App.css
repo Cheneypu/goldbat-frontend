@@ -85,6 +85,80 @@ body {
   background: #f1f1f1;
 }
 
+.intro-bg-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  background: url("/media/bg.png") no-repeat center center;
+  background-size: cover;
+}
+
+.intro-align-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.intro-center-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2vh;
+}
+
+.ready-button {
+  background-color: #4b0082;
+  color: white;
+  padding: 1.2vw 3vw;
+  font-size: 1.8vw;
+  border-radius: 24px;
+  border: none;
+  cursor: pointer;
+  z-index: 101;
+  white-space: nowrap;
+}
+
+.intro-tip {
+  font-size: 1.2rem;
+  color: white;
+  text-shadow: 0 0 6px rgba(0,0,0,0.6);
+}
+
+.intro-video-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: black; /* 或用 transparent 看你需求 */
+  z-index: 100;
+}
+
+.intro-video {
+  width: 100vw;
+  height: 100vh;
+}
+
+.intro-video.cover {
+  object-fit: cover;  /* 手機直屏用，鋪滿無黑邊 */
+}
+
+.intro-video.contain {
+  object-fit: contain; /* 橫屏時完整顯示 */
+}
+
+
 /* 開始導覽按鈕 */
 .start-button {
   background-color: #4b0082;
@@ -172,14 +246,26 @@ body {
   }
 }
 @media (max-width: 600px) {
-  .control-buttons {
-    bottom: 2vh;
-    padding: 0 4vw;
+  .ready-button {
+    font-size: 4vw;
+    padding: 4vw 8vw;
+    border-radius: 12vw;
+  }
+
+  .intro-tip {
+    font-size: 3vw;
+    text-align: center;
+    padding: 0 10vw;
   }
   .control-buttons button {
-    font-size: 3.5vw;
-    padding: 2.5vw 6vw;
-    border-radius: 30px;
+    font-size: 3vw;
+    padding: 2vw 4vw;
+    border-radius: 20px;
+  }
+  .control-buttons button {
+    font-size: 3vw;
+    padding: 2vw 4vw;
+    border-radius: 20px;
   }
   .start-section {
     transform: translate(-50%, 0) translateX(20px);
@@ -291,8 +377,8 @@ body {
 /* X 按鈕：右上角完全靠內，尺寸小，紅色圓形 */
 .faq-close {
   position: absolute;
-  right: 5px;
-  top: 5px;
+  right: 2px;
+  top: 2px;
   width: 22px;
   height: 22px;
   background: #ff4545;
@@ -326,18 +412,29 @@ body {
   .faq-popup input {
     font-size: 0.98rem;
     height: 32px;
+    margin-right: 10px;        /* ✅ 在右側留出空間 */
+    width: calc(100% - 100px); /* ✅ 限制寬度，避免壓到送出或 X */
+  }
+  .faq-fab {
+    width: 60px;
+    height: 60px;
+    font-size: 14px;
+    bottom: 10px;     /* ✅ 保持原本在左下角 */
+    left: 12px;
+    border-radius: 12px;
   }
   .faq-submit {
     font-size: 0.97rem;
     height: 32px;
-    min-width: 44px;
+    min-width: 54px;
     padding: 0 10px;
+    margin-left: 0;
   }
   .faq-close {
     width: 18px;
     height: 18px;
     font-size: 0.9rem;
-    top: 3px;
-    right: 3px;
+    top: 1px;
+    right: 1px;
   }
 }
