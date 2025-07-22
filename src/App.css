@@ -146,12 +146,18 @@ body {
 }
 
 .intro-video {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
+  object-fit: cover;
+  object-position: center;
 }
 
 .intro-video.cover {
-  object-fit: cover;  /* 手機直屏用，鋪滿無黑邊 */
+  object-fit: cover;          /* ✅ 讓影片在直立時滿版 */
+  object-position: center;    /* ✅ 可選，確保裁切平均 */
 }
 
 .intro-video.contain {
