@@ -150,7 +150,7 @@ function App() {
   }, []);
 
   const introBg = "/media/bg.png";
-  const introVideo = isPortrait ? "media/直屏蝙蝠影片修改.mp4" : "/media/蝙蝠橫的.mp4";
+  const introVideo = isPortrait ? "media/bat-portrait-v2.mp4" : "/media/蝙蝠橫的.mp4";
   const introAudio = "/media/環境音.mp3";
 
   const [currentProject, setCurrentProject] = useState(null);
