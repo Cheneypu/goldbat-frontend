@@ -130,6 +130,8 @@ function App() {
   const [FAQ, setFAQ] = useState([]); // 📥 載入 FAQ.json 的資料
   const audioIntroRef = useRef(null);
 
+  const videoRef = useRef(null); // ✅ 新增影片參考
+
   const [playingSource, setPlayingSource] = useState(null); // 'main' | 'faq' | null
 
   // 嘴型動畫狀態
@@ -354,9 +356,19 @@ async function speakText(text, rate = 1.0, onEnd) {
           <div className="intro-align-wrapper">
             <div className="intro-center-block">
               <button className="ready-button" onClick={() => {
-                setShowReady(false);
-                setShowIntro(true);
-              }}>
+  setShowReady(false);
+  setShowIntro(true);
+
+  setTimeout(() => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().catch(e => {
+        alert("影片播放失敗：" + e.message);
+      });
+    }
+  }, 200); // 可微調延遲
+}}>
+
                 我準備啟程
               </button>
               <p className="intro-tip">請開啟聲音，讓我來向你介紹！</p>
@@ -368,8 +380,9 @@ async function speakText(text, rate = 1.0, onEnd) {
       {showIntro && (
         <div className="intro-video-overlay">
           <video
+            ref={videoRef}  
             src={introVideo}
-            autoPlay
+            preload="auto"
             playsInline
             onEnded={() => {
   setShowIntro(false);
