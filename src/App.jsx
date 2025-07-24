@@ -294,6 +294,11 @@ useEffect(() => {
   setIsFlowerMode(false);
 
   // ✅ 根據新段落切換背景（開頭立即切）
+
+if (key === "黃金鼠尾蝠是誰") {
+  setBodyBackground("/media/bg3.png");
+}
+
   if (key === "在大社國小的家") {
   setIsFlowerMode(true);
   setBodyBackground("/media/flowers.bg.png");
