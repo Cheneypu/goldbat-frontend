@@ -174,6 +174,20 @@ const [isFlowerMode, setIsFlowerMode] = useState(false);
 const [customBg, setCustomBg] = useState(null); // 目前是否有「字幕控制的背景」
 
 
+const lastBgUrlRef = useRef(null);
+
+function setBodyBackground(url) {
+  if (lastBgUrlRef.current === url) return; // 避免重複切
+  lastBgUrlRef.current = url;
+
+  const img = new Image();
+  img.src = url;
+  img.onload = () => {
+    document.body.style.background = `url('${url}') no-repeat center center fixed`;
+    document.body.style.backgroundSize = "cover";
+  };
+}
+
 useEffect(() => {
   const openImg = new Image();
   openImg.src = "/media/bat.png";
@@ -265,24 +279,20 @@ useEffect(() => {
   // ✅ 切換段落時，先重設背景與狀態
   setIsNightMode(false);
   setIsFlowerMode(false);
-  document.body.style.background = "url('/media/bg3.png') no-repeat center center fixed";
-  document.body.style.backgroundSize = "cover";
+  setBodyBackground("/media/bg3.png");
 
   // ✅ 根據新段落切換背景（開頭立即切）
   if (key === "在大社國小的家") {
   setIsFlowerMode(true);
-  document.body.style.background = "url('/media/flowers.bg.png') no-repeat center center fixed";
-  document.body.style.backgroundSize = "cover";
+  setBodyBackground("/media/flowers.bg.png");
 }
 
 if (key === "蝙蝠的生態角色") {
-  document.body.style.background = "url('/media/night.bg.png') no-repeat center center fixed";
-  document.body.style.backgroundSize = "cover";
+  setBodyBackground("/media/night.bg.png");
 }
 
 if (key === "危機與保育") {
-  document.body.style.background = "url('/media/treefell.bg.png') no-repeat center center fixed";
-  document.body.style.backgroundSize = "cover";
+  setBodyBackground("/media/treefell.bg.png");
 }
 
 
@@ -353,8 +363,7 @@ if (
   customBg !== "crisis-nightlight"
 ) {
   setCustomBg("crisis-nightlight");
-  document.body.style.background = "url('/media/nightlight.png') no-repeat center center fixed";
-  document.body.style.backgroundSize = "cover";
+  setBodyBackground("/media/nightlight.png");
 }
 
 // ✅ 危機與保育 - 最後一句「其實我們一點都不危險」
@@ -364,8 +373,7 @@ else if (
   customBg !== "crisis-end"
 ) {
   setCustomBg("crisis-end");
-  document.body.style.background = "url('/media/end.png') no-repeat center center fixed";
-  document.body.style.backgroundSize = "cover";
+  setBodyBackground("/media/end.png");
 }
 
 
@@ -375,8 +383,7 @@ if (
   customBg !== "insects"
 ) {
   setCustomBg("insects");
-  document.body.style.background = "url('/media/insects.png') no-repeat center center fixed";
-  document.body.style.backgroundSize = "cover";
+  setBodyBackground("/media/insects.png");
 }
 
 // ✅ 蝙蝠的生態角色 - 猛禽威脅
@@ -386,8 +393,7 @@ else if (
   customBg !== "bird"
 ) {
   setCustomBg("bird");
-  document.body.style.background = "url('/media/bird.bg.png') no-repeat center center fixed";
-  document.body.style.backgroundSize = "cover";
+  setBodyBackground("/media/bird.bg.png");
 }
 
 // ✅ 蝙蝠的生態角色 - 鼓勵觀眾
@@ -397,8 +403,7 @@ else if (
   customBg !== "nicenight"
 ) {
   setCustomBg("nicenight");
-  document.body.style.background = "url('/media/nicenight.png') no-repeat center center fixed";
-  document.body.style.backgroundSize = "cover";
+  setBodyBackground("/media/nicenight.png");
 }
 
 // ✅ 第一段：晚上燈光變亮（夜光）
@@ -408,8 +413,7 @@ if (
   customBg !== "nightlight"
 ) {
   setCustomBg("nightlight");
-  document.body.style.background = "url('/media/nightlight.png') no-repeat center center fixed";
-  document.body.style.backgroundSize = "cover";
+  setBodyBackground("/media/nightlight.png");
 }
 
 // ✅ 第二段：飛到大社（大社背景）
@@ -419,8 +423,7 @@ else if (
   customBg !== "dashu"
 ) {
   setCustomBg("dashu");
-  document.body.style.background = "url('/media/dashu.png') no-repeat center center fixed";
-  document.body.style.backgroundSize = "cover";
+  setBodyBackground("/media/dashu.png");
 }
 
 // ✅ 第三段：冬眠（洞穴背景）
@@ -430,8 +433,7 @@ else if (
   customBg !== "caves"
 ) {
   setCustomBg("caves");
-  document.body.style.background = "url('/media/caves.png') no-repeat center center fixed";
-  document.body.style.backgroundSize = "cover";
+  setBodyBackground("/media/caves.png");
 }
 
 
@@ -443,8 +445,7 @@ else if (
       !isNightMode
     ) {
       setIsNightMode(true);
-      document.body.style.background = "url('/media/night.bg.png') no-repeat center center fixed";
-      document.body.style.backgroundSize = "cover";
+      setBodyBackground("/media/night.bg.png");
     }
 
     // ✅ 「在大社國小的家」→ 全段期間切花園背景（只切一次）
@@ -455,8 +456,7 @@ else if (
   isPlaying // ✅ 僅播放中才執行
 ) {
   setIsFlowerMode(true);
-  document.body.style.background = "url('/media/flowers.bg.png') no-repeat center center fixed";
-  document.body.style.backgroundSize = "cover";
+  setBodyBackground("/media/flowers.bg.png");
 }
 
 
@@ -541,8 +541,7 @@ async function speakText(text, rate = 1.0, onEnd) {
   }
 
   if (currentProject === "危機與保育") {
-    document.body.style.background = "url('/media/bg3.png') no-repeat center center fixed";
-    document.body.style.backgroundSize = "cover";
+    setBodyBackground("/media/bg3.png");
   }
 
   // ✅ 不清除 customBg（結尾保持最後畫面）
@@ -589,8 +588,7 @@ async function speakText(text, rate = 1.0, onEnd) {
   setShowIntro(false);
 
   // ✅ 設定背景圖為 bg1.png
-  document.body.style.background = "url('/media/bg3.png') no-repeat center center fixed";
-  document.body.style.backgroundSize = "cover";
+  setBodyBackground("/media/bg3.png");
 
   setTimeout(() => {
     if (audioIntroRef.current) {
