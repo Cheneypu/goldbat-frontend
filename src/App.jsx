@@ -207,6 +207,11 @@ useEffect(() => {
 }, []);
 
 useEffect(() => {
+  // 預先載入 bg.png 並設為背景（解決閃圖）
+  setBodyBackground("/media/bg.png");
+}, []);
+
+useEffect(() => {
   const preloadList = [
     "bat.png", "bat-closed.png", "bg3.png", "night.bg.png", "flowers.bg.png",
     "nightlight.png", "dashu.png", "caves.png", "treefell.bg.png",
