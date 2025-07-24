@@ -155,7 +155,7 @@ const [batClosedImgLoaded, setBatClosedImgLoaded] = useState(false);
   }, []);
 
   const introBg = "/media/bg.png";
-  const introVideo = isPortrait ? "media/bat-portrait-v2.mp4" : "/media/蝙蝠橫的.mp4";
+  const introVideo = isPortrait ? "media/bat-portrait-v2.mp4" : "/media/bat-landscape.mp4";
   const introAudio = "/media/環境音.mp3";
 
   const [currentProject, setCurrentProject] = useState(null);
@@ -287,7 +287,6 @@ useEffect(() => {
   // ✅ 切換段落時，先重設背景與狀態
   setIsNightMode(false);
   setIsFlowerMode(false);
-  setBodyBackground("/media/bg3.png");
 
   // ✅ 根據新段落切換背景（開頭立即切）
   if (key === "在大社國小的家") {
