@@ -173,15 +173,28 @@ const [customBg, setCustomBg] = useState(null); // 目前是否有「字幕控�
 
 
 useEffect(() => {
-    const openMouth = new Image();
-    openMouth.src = "/media/bat.png";
+  const preloadList = [
+    "bat.png", "閉嘴.png", "bg3.png", "night.bg.png", "flowers.bg.png",
+    "nightlight.png", "dashu.png", "caves.png", "treefell.bg.png",
+    "insects.png", "bird.bg.png", "nicenight.png", "end.png"
+  ];
 
-    const closedMouth = new Image();
-    closedMouth.src = "/media/閉嘴.png";
-  }, []);
+  preloadList.forEach(name => {
+    const img = new Image();
+    img.src = `/media/${name}`;
+  });
+}, []);
+
 
   useEffect(() => {
   clearTimeout(mouthTimeoutRef.current);
+
+  console.log("🟢 嘴巴動畫啟動條件：", {
+  playingSource,
+  isPlaying,
+  currentText,
+  faqText,
+});
 
   const isActuallyPlaying =
     (playingSource === "main" && isPlaying && currentText) ||
