@@ -177,16 +177,24 @@ const [customBg, setCustomBg] = useState(null); // 目前是否有「字幕控�
 const lastBgUrlRef = useRef(null);
 
 function setBodyBackground(url) {
-  if (lastBgUrlRef.current === url) return; // 避免重複切
+  if (lastBgUrlRef.current === url) return;
   lastBgUrlRef.current = url;
 
   const img = new Image();
   img.src = url;
+
+  const bgLayer = document.getElementById("bg-layer");
+  if (!bgLayer) return;
+
   img.onload = () => {
-    document.body.style.background = `url('${url}') no-repeat center center fixed`;
-    document.body.style.backgroundSize = "cover";
+    bgLayer.style.opacity = 0;
+    setTimeout(() => {
+      bgLayer.style.backgroundImage = `url('${url}')`;
+      bgLayer.style.opacity = 1;
+    }, 50);
   };
 }
+
 
 useEffect(() => {
   const openImg = new Image();
@@ -551,6 +559,7 @@ async function speakText(text, rate = 1.0, onEnd) {
 
   return (
     <div className="container">
+        <div id="bg-layer" />
       {showReady && (
         <div className="intro-bg-overlay">
           <div className="intro-align-wrapper">

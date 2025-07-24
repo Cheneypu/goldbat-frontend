@@ -444,5 +444,21 @@ body {
     right: 1px;
   }
 
+  /* 🔥 新增背景圖層：避免白屏用 */
+#bg-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000 no-repeat center center fixed;
+  background-size: cover;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+
   
 }
