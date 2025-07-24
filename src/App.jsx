@@ -165,6 +165,12 @@ function App() {
   const projectKeys = Object.keys(guideProjects);
   const firstProjectKey = projectKeys[0];
 
+  // ⬇️ 加在其他 useState 後面
+const [isNightMode, setIsNightMode] = useState(false); // ✅ 新增 state：是否夜晚模式
+const [isFlowerMode, setIsFlowerMode] = useState(false);
+const [customBg, setCustomBg] = useState(null); // 目前是否有「字幕控制的背景」
+
+
 
 useEffect(() => {
     const openMouth = new Image();
@@ -223,11 +229,36 @@ useEffect(() => {
   setFaqText("");
   setCurrentText("");
   setIsPlaying(true);
-  setCurrentProject(key);
   setPlayingSource("main");
   setIsDropdownOpen(false);
 
-  // ✅ 不再使用 speakText，改為播放 guideProjects 的原音檔
+  // ✅ 切換段落時，先重設背景與狀態
+  setIsNightMode(false);
+  setIsFlowerMode(false);
+  document.body.style.background = "url('/media/bg3.png') no-repeat center center fixed";
+  document.body.style.backgroundSize = "cover";
+
+  // ✅ 根據新段落切換背景（開頭立即切）
+  if (key === "在大社國小的家") {
+  setIsFlowerMode(true);
+  document.body.style.background = "url('/media/flowers.bg.png') no-repeat center center fixed";
+  document.body.style.backgroundSize = "cover";
+}
+
+if (key === "蝙蝠的生態角色") {
+  document.body.style.background = "url('/media/night.bg.png') no-repeat center center fixed";
+  document.body.style.backgroundSize = "cover";
+}
+
+if (key === "危機與保育") {
+  document.body.style.background = "url('/media/treefell.bg.png') no-repeat center center fixed";
+  document.body.style.backgroundSize = "cover";
+}
+
+
+  // 若播放第一段，背景會依字幕時機切換夜景（不立即切）
+  setCurrentProject(key);
+
   setTimeout(() => {
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
@@ -235,6 +266,7 @@ useEffect(() => {
     }
   }, 100);
 };
+
 
 
 
@@ -272,20 +304,142 @@ useEffect(() => {
   }, [showReady]);
 
   useEffect(() => {
-    if (!currentProject) return;
-    const checkSubtitle = () => {
-      const audio = audioRef.current;
-      const currentTime = audio ? audio.currentTime : 0;
-      const subs = guideProjects[currentProject].subtitles;
-      const current = subs.find(
-        (s) => currentTime >= s.start && currentTime <= s.end
-      );
-      if (!faqText) setCurrentText(current ? current.text : "");
-      rafRef.current = requestAnimationFrame(checkSubtitle);
-    };
+  if (!currentProject) return;
+
+  const checkSubtitle = () => {
+    if (!isPlaying) return; // ✅ 播放結束後停止背景切換
+    const audio = audioRef.current;
+    const currentTime = audio ? audio.currentTime : 0;
+    const subs = guideProjects[currentProject].subtitles;
+    
+    const current = subs.find(
+  (s) => currentTime >= s.start && currentTime <= s.end
+);
+
+// ✅ 危機與保育 - 夜光背景
+if (
+  currentProject === "危機與保育" &&
+  current?.text?.includes("到了晚上，天空也還亮亮的") &&
+  customBg !== "crisis-nightlight"
+) {
+  setCustomBg("crisis-nightlight");
+  document.body.style.background = "url('/media/nightlight.png') no-repeat center center fixed";
+  document.body.style.backgroundSize = "cover";
+}
+
+// ✅ 危機與保育 - 最後一句「其實我們一點都不危險」
+else if (
+  currentProject === "危機與保育" &&
+  current?.text?.includes("其實我們一點都不危險") &&
+  customBg !== "crisis-end"
+) {
+  setCustomBg("crisis-end");
+  document.body.style.background = "url('/media/end.png') no-repeat center center fixed";
+  document.body.style.backgroundSize = "cover";
+}
+
+
+if (
+  currentProject === "蝙蝠的生態角色" &&
+  current?.text?.includes("我每天晚上都在抓昆蟲") &&
+  customBg !== "insects"
+) {
+  setCustomBg("insects");
+  document.body.style.background = "url('/media/insects.png') no-repeat center center fixed";
+  document.body.style.backgroundSize = "cover";
+}
+
+// ✅ 蝙蝠的生態角色 - 猛禽威脅
+else if (
+  currentProject === "蝙蝠的生態角色" &&
+  current?.text?.includes("像貓頭鷹、蛇，還有一些大鳥") &&
+  customBg !== "bird"
+) {
+  setCustomBg("bird");
+  document.body.style.background = "url('/media/bird.bg.png') no-repeat center center fixed";
+  document.body.style.backgroundSize = "cover";
+}
+
+// ✅ 蝙蝠的生態角色 - 鼓勵觀眾
+else if (
+  currentProject === "蝙蝠的生態角色" &&
+  current?.text?.includes("別因為我們嬌小的外型就小看我們喔") &&
+  customBg !== "nicenight"
+) {
+  setCustomBg("nicenight");
+  document.body.style.background = "url('/media/nicenight.png') no-repeat center center fixed";
+  document.body.style.backgroundSize = "cover";
+}
+
+// ✅ 第一段：晚上燈光變亮（夜光）
+if (
+  currentProject === "在大社國小的家" &&
+  current?.text === "晚上的燈光變亮" &&
+  customBg !== "nightlight"
+) {
+  setCustomBg("nightlight");
+  document.body.style.background = "url('/media/nightlight.png') no-repeat center center fixed";
+  document.body.style.backgroundSize = "cover";
+}
+
+// ✅ 第二段：飛到大社（大社背景）
+else if (
+  currentProject === "在大社國小的家" &&
+  current?.text === "有一年，我們飛到了台南大社國小" &&
+  customBg !== "dashu"
+) {
+  setCustomBg("dashu");
+  document.body.style.background = "url('/media/dashu.png') no-repeat center center fixed";
+  document.body.style.backgroundSize = "cover";
+}
+
+// ✅ 第三段：冬眠（洞穴背景）
+else if (
+  currentProject === "在大社國小的家" &&
+  current?.text === "找個洞穴或安靜的地方冬眠" &&
+  customBg !== "caves"
+) {
+  setCustomBg("caves");
+  document.body.style.background = "url('/media/caves.png') no-repeat center center fixed";
+  document.body.style.backgroundSize = "cover";
+}
+
+
+
+    // ✅ 「晚上才會出來活動喔」→ 切夜晚背景
+    if (
+      currentProject === "黃金鼠尾蝠是誰" &&
+      current?.text === "晚上才會出來活動喔" &&
+      !isNightMode
+    ) {
+      setIsNightMode(true);
+      document.body.style.background = "url('/media/night.bg.png') no-repeat center center fixed";
+      document.body.style.backgroundSize = "cover";
+    }
+
+    // ✅ 「在大社國小的家」→ 全段期間切花園背景（只切一次）
+    if (
+  currentProject === "在大社國小的家" &&
+  !isFlowerMode &&
+  customBg === null &&
+  isPlaying // ✅ 僅播放中才執行
+) {
+  setIsFlowerMode(true);
+  document.body.style.background = "url('/media/flowers.bg.png') no-repeat center center fixed";
+  document.body.style.backgroundSize = "cover";
+}
+
+
+    if (!faqText) setCurrentText(current ? current.text : "");
     rafRef.current = requestAnimationFrame(checkSubtitle);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [currentProject, faqText]);
+  };
+
+  rafRef.current = requestAnimationFrame(checkSubtitle);
+  return () => cancelAnimationFrame(rafRef.current);
+}, [currentProject, faqText, isNightMode, isFlowerMode]);
+
+
+
 
   const audioRefFaq = useRef(null); // 新增一個 audioRefFaq
 
@@ -346,8 +500,25 @@ async function speakText(text, rate = 1.0, onEnd) {
 
 
   const handleEnded = () => {
-    setIsPlaying(false);
-  };
+  setIsPlaying(false);
+
+  if (currentProject === "黃金鼠尾蝠是誰" && isNightMode) {
+    setIsNightMode(false);
+  }
+
+  if (currentProject === "在大社國小的家" && isFlowerMode) {
+    setIsFlowerMode(false);
+  }
+
+  if (currentProject === "危機與保育") {
+    document.body.style.background = "url('/media/bg3.png') no-repeat center center fixed";
+    document.body.style.backgroundSize = "cover";
+  }
+
+  // ✅ 不清除 customBg（結尾保持最後畫面）
+};
+
+
 
   return (
     <div className="container">
