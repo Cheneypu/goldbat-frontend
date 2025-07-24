@@ -138,6 +138,9 @@ function App() {
   const [batMouthOpen, setBatMouthOpen] = useState(false);
   const mouthTimeoutRef = useRef();
 
+  const [batImgLoaded, setBatImgLoaded] = useState(false);
+const [batClosedImgLoaded, setBatClosedImgLoaded] = useState(false);
+
   // FAQ/問答彈窗
   const [showFAQ, setShowFAQ] = useState(false);
   const [faqInput, setFaqInput] = useState("");
@@ -171,10 +174,19 @@ const [isFlowerMode, setIsFlowerMode] = useState(false);
 const [customBg, setCustomBg] = useState(null); // 目前是否有「字幕控制的背景」
 
 
+useEffect(() => {
+  const openImg = new Image();
+  openImg.src = "/media/bat.png";
+  openImg.onload = () => setBatImgLoaded(true);
+
+  const closedImg = new Image();
+  closedImg.src = "/media/bat-closed.png";
+  closedImg.onload = () => setBatClosedImgLoaded(true);
+}, []);
 
 useEffect(() => {
   const preloadList = [
-    "bat.png", "閉嘴.png", "bg3.png", "night.bg.png", "flowers.bg.png",
+    "bat.png", "bat-closed.png", "bg3.png", "night.bg.png", "flowers.bg.png",
     "nightlight.png", "dashu.png", "caves.png", "treefell.bg.png",
     "insects.png", "bird.bg.png", "nicenight.png", "end.png"
   ];
@@ -190,17 +202,21 @@ useEffect(() => {
   clearTimeout(mouthTimeoutRef.current);
 
   console.log("🟢 嘴巴動畫啟動條件：", {
-  playingSource,
-  isPlaying,
-  currentText,
-  faqText,
-});
+    playingSource,
+    isPlaying,
+    currentText,
+    faqText,
+    batImgLoaded,
+    batClosedImgLoaded,
+  });
 
   const isActuallyPlaying =
     (playingSource === "main" && isPlaying && currentText) ||
     (playingSource === "faq" && isPlaying && faqText);
 
-  if (!isActuallyPlaying) {
+  const allImagesReady = batImgLoaded && batClosedImgLoaded;
+
+  if (!isActuallyPlaying || !allImagesReady) {
     setBatMouthOpen(false);
     return;
   }
@@ -213,7 +229,8 @@ useEffect(() => {
 
   animateMouth();
   return () => clearTimeout(mouthTimeoutRef.current);
-}, [isPlaying, currentText, faqText, playingSource]);
+}, [isPlaying, currentText, faqText, playingSource, batImgLoaded, batClosedImgLoaded]);
+
 
 
   // 🔁 一開始載入 FAQ.json 檔案
@@ -606,8 +623,8 @@ async function speakText(text, rate = 1.0, onEnd) {
           <img
             src={
               (faqText || currentText)
-                ? (batMouthOpen ? "/media/bat.png" : "/media/閉嘴.png")
-                : "/media/閉嘴.png"
+                ? (batMouthOpen ? "/media/bat.png" : "/media/bat-closed.png")
+                : "/media/bat-closed.png"
             }
             alt="黃金蝙蝠"
             className="bat-background"
