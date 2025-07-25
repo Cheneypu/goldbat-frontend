@@ -177,25 +177,23 @@ const [customBg, setCustomBg] = useState(null); // 目前是否有「字幕控�
 const lastBgUrlRef = useRef(null);
 
 function setBodyBackground(url) {
-  // 假設 bgLayer 一定存在
   const bgLayer = document.getElementById("bg-layer");
   if (!bgLayer) {
-    // 這裡可以加 log，方便偵錯
     console.warn("找不到 #bg-layer，背景無法切換。");
     return;
   }
   if (lastBgUrlRef.current === url) return;
   lastBgUrlRef.current = url;
 
-  // 切換時先降透明避免閃爍
-  bgLayer.style.opacity = 0;
+  // ⭐️ 不動 opacity，只在圖片載入好才一次換過去，不透明
   const img = new Image();
   img.src = url;
   img.onload = () => {
     bgLayer.style.backgroundImage = `url('${url}')`;
-    bgLayer.style.opacity = 1;
+    // 完全不用動 opacity
   };
 }
+
 
 
 
