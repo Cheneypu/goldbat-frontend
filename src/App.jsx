@@ -629,7 +629,7 @@ async function speakText(text, rate = 1.0, onEnd) {
       : "/media/bat-closed.png"
   }
   alt="黃金蝙蝠"
-  className="bat-png"
+  className="bat-img"
 />
 
 
