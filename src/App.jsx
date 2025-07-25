@@ -177,23 +177,26 @@ const [customBg, setCustomBg] = useState(null); // 目前是否有「字幕控�
 const lastBgUrlRef = useRef(null);
 
 function setBodyBackground(url) {
+  // 假設 bgLayer 一定存在
+  const bgLayer = document.getElementById("bg-layer");
+  if (!bgLayer) {
+    // 這裡可以加 log，方便偵錯
+    console.warn("找不到 #bg-layer，背景無法切換。");
+    return;
+  }
   if (lastBgUrlRef.current === url) return;
   lastBgUrlRef.current = url;
 
+  // 切換時先降透明避免閃爍
+  bgLayer.style.opacity = 0;
   const img = new Image();
   img.src = url;
-
-  const bgLayer = document.getElementById("bg-layer");
-  if (!bgLayer) return;
-
   img.onload = () => {
-    bgLayer.style.opacity = 0;
-    setTimeout(() => {
-      bgLayer.style.backgroundImage = `url('${url}')`;
-      bgLayer.style.opacity = 1;
-    }, 50);
+    bgLayer.style.backgroundImage = `url('${url}')`;
+    bgLayer.style.opacity = 1;
   };
 }
+
 
 
 useEffect(() => {
@@ -228,22 +231,11 @@ useEffect(() => {
   useEffect(() => {
   clearTimeout(mouthTimeoutRef.current);
 
-  console.log("🟢 嘴巴動畫啟動條件：", {
-    playingSource,
-    isPlaying,
-    currentText,
-    faqText,
-    batImgLoaded,
-    batClosedImgLoaded,
-  });
-
-  const isActuallyPlaying =
-    (playingSource === "main" && isPlaying && currentText) ||
-    (playingSource === "faq" && isPlaying && faqText);
-
+  const isMainPlaying = audioRef.current && !audioRef.current.paused && !audioRef.current.ended;
+  const isFaqPlaying = audioRefFaq.current && !audioRefFaq.current.paused && !audioRefFaq.current.ended;
   const allImagesReady = batImgLoaded && batClosedImgLoaded;
 
-  if (!isActuallyPlaying || !allImagesReady) {
+  if ((!isMainPlaying && !isFaqPlaying) || !allImagesReady) {
     setBatMouthOpen(false);
     return;
   }
@@ -256,7 +248,7 @@ useEffect(() => {
 
   animateMouth();
   return () => clearTimeout(mouthTimeoutRef.current);
-}, [isPlaying, currentText, faqText, playingSource, batImgLoaded, batClosedImgLoaded]);
+}, [isPlaying, batImgLoaded, batClosedImgLoaded]);
 
 
 
@@ -637,19 +629,9 @@ async function speakText(text, rate = 1.0, onEnd) {
       : "/media/bat-closed.png"
   }
   alt="黃金蝙蝠"
-  className="bat-background"
+  className="bat-png"
 />
 
-
-          <div
-  className="bat-background"
-  style={{
-    backgroundImage: `url(${(faqText || currentText)
-      ? (batMouthOpen ? "/media/bat.png" : "/media/bat-closed.png")
-      : "/media/bat-closed.png"
-    })`
-  }}
-></div>
 
 
           <div className="dropdown">
