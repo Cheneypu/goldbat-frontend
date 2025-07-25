@@ -631,6 +631,11 @@ async function speakText(text, rate = 1.0, onEnd) {
   alt="黃金蝙蝠"
   className="bat-img"
 />
+{(faqText || currentText) && (
+      <div className="subtitle-display">
+        <p>{faqText || currentText}</p>
+      </div>
+    )}
 
 
 
