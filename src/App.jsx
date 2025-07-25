@@ -230,12 +230,10 @@ useEffect(() => {
 
   useEffect(() => {
   clearTimeout(mouthTimeoutRef.current);
+  console.log("動畫啟動條件", { isPlaying, batImgLoaded, batClosedImgLoaded });
 
-  const isMainPlaying = audioRef.current && !audioRef.current.paused && !audioRef.current.ended;
-  const isFaqPlaying = audioRefFaq.current && !audioRefFaq.current.paused && !audioRefFaq.current.ended;
-  const allImagesReady = batImgLoaded && batClosedImgLoaded;
-
-  if ((!isMainPlaying && !isFaqPlaying) || !allImagesReady) {
+  // 只判斷 isPlaying + 兩張圖有載入即可
+  if (!isPlaying || !batImgLoaded || !batClosedImgLoaded) {
     setBatMouthOpen(false);
     return;
   }
@@ -249,6 +247,7 @@ useEffect(() => {
   animateMouth();
   return () => clearTimeout(mouthTimeoutRef.current);
 }, [isPlaying, batImgLoaded, batClosedImgLoaded]);
+
 
 
 
