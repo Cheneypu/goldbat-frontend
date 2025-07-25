@@ -16,7 +16,7 @@ body {
 }
 
 /* 蝙蝠主視覺背景（置中、夠大、層級最低） */
-.bat-background {
+.bat-img {
   position: fixed;
   left: 50%;
   top: 38vh;           /* 微調上下位置建議 35~42 之間 */
@@ -416,7 +416,7 @@ body {
   background: #000 no-repeat center center fixed;
   background-size: cover;
   z-index: -1;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.4s ease;
   pointer-events: none;
 }
