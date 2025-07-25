@@ -636,15 +636,16 @@ async function speakText(text, rate = 1.0, onEnd) {
             </div>
           )}
 
-          <img
-            src={
-              (faqText || currentText)
-                ? (batMouthOpen ? "/media/bat.png" : "/media/bat-closed.png")
-                : "/media/bat-closed.png"
-            }
-            alt="黃金蝙蝠"
-            className="bat-background"
-          />
+          <div
+  className="bat-background"
+  style={{
+    backgroundImage: `url(${(faqText || currentText)
+      ? (batMouthOpen ? "/media/bat.png" : "/media/bat-closed.png")
+      : "/media/bat-closed.png"
+    })`
+  }}
+></div>
+
 
           <div className="dropdown">
             <button
