@@ -630,11 +630,16 @@ async function speakText(text, rate = 1.0, onEnd) {
 
       {!showReady && !showIntro && (
         <>
-          {(faqText || currentText) && (
-            <div className="subtitle-display">
-              <p>{faqText || currentText}</p>
-            </div>
-          )}
+          <img
+  src={
+    (faqText || currentText)
+      ? (batMouthOpen ? "/media/bat.png" : "/media/bat-closed.png")
+      : "/media/bat-closed.png"
+  }
+  alt="黃金蝙蝠"
+  className="bat-background"
+/>
+
 
           <div
   className="bat-background"
