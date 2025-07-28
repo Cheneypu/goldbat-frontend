@@ -495,11 +495,11 @@ async function speakText(text, rate = 1.0, onEnd) {
       audioRef.current.pause(); // 暫停主線
     }
 
-    const res = await fetch("/api/tts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, filename, rate })
-    });
+    const res = await fetch("https://goldbat-tts-api.onrender.com/api/tts", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ text, filename, rate })
+});
 
     const data = await res.json();
     if (!data.url) throw new Error(data.error || "語音生成失敗");
