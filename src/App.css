@@ -296,7 +296,7 @@ body {
 /* FAQ 按鈕（左下角） */
 .faq-fab {
   position: fixed;
-  left: 26px;
+  left: 18px;
   bottom: 10px;
   width: 78px;
   height: 70px;
