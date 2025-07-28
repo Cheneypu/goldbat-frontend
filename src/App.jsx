@@ -278,6 +278,8 @@ useEffect(() => {
   setPlayingSource("main");
   setIsDropdownOpen(false);
 
+  setCustomBg(null);
+
   // ✅ 切換段落時，先重設背景與狀態
   setIsNightMode(false);
   setIsFlowerMode(false);
@@ -472,7 +474,7 @@ else if (
 
   rafRef.current = requestAnimationFrame(checkSubtitle);
   return () => cancelAnimationFrame(rafRef.current);
-}, [currentProject, faqText, isNightMode, isFlowerMode]);
+}, [currentProject, faqText, isNightMode, isFlowerMode, customBg]);
 
 
 
@@ -537,6 +539,9 @@ async function speakText(text, rate = 1.0, onEnd) {
 
   const handleEnded = () => {
   setIsPlaying(false);
+
+  // 新增這行：播放結束時清空 customBg
+  setCustomBg(null);
 
   if (currentProject === "黃金鼠尾蝠是誰" && isNightMode) {
     setIsNightMode(false);
