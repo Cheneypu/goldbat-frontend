@@ -318,30 +318,36 @@ if (key === "危機與保育") {
 
 
 
-  function handleFaqSubmit() {
-    if (!faqInput.trim()) return;
+  async function handleFaqSubmit() {
+  if (!faqInput.trim()) return;
 
-    // 暫停主流程語音
-    if (audioRef.current && !audioRef.current.paused) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    }
-
-    const keyword = faqInput.trim();
-    const found = FAQ.find(qa =>
-      qa.q_variants?.some(q =>
-        keyword.includes(q) || q.includes(keyword)
-      )
-    );
-
-    const answer = found
-      ? found.a_variants[Math.floor(Math.random() * found.a_variants.length)]
-      : "很抱歉，暫時沒有找到相關答案。";
-
-      setShowFAQ(false);
-      setFaqInput("");
-      speakText(answer, 1.0);
+  // 暫停主流程語音
+  if (audioRef.current && !audioRef.current.paused) {
+    audioRef.current.pause();
+    setIsPlaying(false);
   }
+
+  const userQuestion = faqInput.trim();
+
+  try {
+    const res = await fetch(`${API_BASE}/ask`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: userQuestion })
+    });
+
+    const data = await res.json();
+    const answer = data.answer || "我不知道怎麼回答這題，請再問問看別的問題喔～";
+
+    setShowFAQ(false);
+    setFaqInput("");
+    speakText(answer, 1.0); // 播放語音
+  } catch (err) {
+    console.error("❌ 無法取得回答：", err);
+    speakText("抱歉，我現在無法回答，可能是網路有問題喔", 1.0);
+  }
+}
+
 
   useEffect(() => {
     if (showReady) {
