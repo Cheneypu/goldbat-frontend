@@ -512,14 +512,17 @@ async function speakText(text, rate = 1.0, onEnd) {
     audioRefFaq.current = audio;
 
     audio.onloadedmetadata = () => {
+      const fullText = text; // ✅ 新增這行，避免錯誤
       const duration = audio.duration || 6;
       const minSegmentLength = 15;
-      const splitRegex = /(?<=[，、。！？；])/g;
+
+      const splitRegex = /(?<=[，、。！？；])/g; // ✅ 按標點分段
       const segments = fullText.length > minSegmentLength
-  ? fullText.split(splitRegex)
-      .map(s => s.trim().replace(/[，、。！？；]*$/, ""))  // 去除尾標點
-      .filter(Boolean)
-  : [fullText];
+        ? fullText
+            .split(splitRegex)
+            .map(s => s.trim().replace(/[，、。！？；]*$/, "")) // ✅ 去尾標點
+            .filter(Boolean)
+        : [fullText];
 
       const totalChars = segments.reduce((sum, seg) => sum + seg.length, 0);
       let index = 0;
@@ -554,8 +557,6 @@ async function speakText(text, rate = 1.0, onEnd) {
     if (onEnd) onEnd();
   }
 }
-
-
 
 
 
