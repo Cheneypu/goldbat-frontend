@@ -489,26 +489,21 @@ else if (
   const audioRefFaq = useRef(null); // 新增一個 audioRefFaq
 
 async function speakText(text, rate = 1.0, onEnd) {
-
   if (audioRefFaq.current) {
-  audioRefFaq.current.pause();
-  audioRefFaq.current = null;
-}
+    audioRefFaq.current.pause();
+    audioRefFaq.current = null;
+  }
 
   try {
     const filename = `faq-${Date.now()}.mp3`;
-
     const wasMainPlaying = audioRef.current && !audioRef.current.paused;
+    if (wasMainPlaying) audioRef.current.pause();
 
-    if (wasMainPlaying) {
-      audioRef.current.pause(); // 暫停主線
-    }
-
-    const res = await fetch("https://goldbat-tts-api.onrender.com/api/tts", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ text, filename, rate })
-});
+    const res = await fetch(`${API_BASE}/api/tts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, filename, rate }),
+    });
 
     const data = await res.json();
     if (!data.url) throw new Error(data.error || "語音生成失敗");
@@ -516,48 +511,39 @@ async function speakText(text, rate = 1.0, onEnd) {
     const audio = new Audio(data.url);
     audioRefFaq.current = audio;
 
-    audio.onplay = () => {
-  setIsPlaying(true);
-  setPlayingSource("faq");
+    audio.onloadedmetadata = () => {
+      const duration = audio.duration || 6;
+      const minSegmentLength = 15;
+      const splitRegex = /(?<=[，、。！？；])/g;
+      const segments = text.length > minSegmentLength
+        ? text.split(splitRegex).map(s => s.trim()).filter(Boolean)
+        : [text];
 
-  const fullText = text;
-  const totalDuration = audio.duration || 6; // fallback 預估 6 秒
-  const minSegmentLength = 15; // 超過幾個字才切分
-  const splitRegex = /(?<=[，、。！？；])/g; // 以標點為切句點
+      const totalChars = segments.reduce((sum, seg) => sum + seg.length, 0);
+      let index = 0;
 
-  // 分段：長句就切，短句就整段顯示
-  const segments = fullText.length > minSegmentLength
-    ? fullText.split(splitRegex).map(s => s.trim()).filter(Boolean)
-    : [fullText];
+      function showNext() {
+        if (index >= segments.length) return;
+        const seg = segments[index];
+        const time = (seg.length / totalChars) * duration * 1000;
+        setFaqText(seg);
+        index++;
+        setTimeout(showNext, time);
+      }
 
-  const totalChars = segments.reduce((sum, seg) => sum + seg.length, 0);
-
-  let currentIndex = 0;
-  function showNextSegment() {
-    if (currentIndex >= segments.length) return;
-
-    const segment = segments[currentIndex];
-    const segmentDuration = (segment.length / totalChars) * totalDuration * 1000;
-
-    setFaqText(segment);
-    currentIndex++;
-
-    setTimeout(showNextSegment, segmentDuration);
-  }
-
-  showNextSegment();
-};
+      showNext();
+      audio.play();
+      setIsPlaying(true);
+      setPlayingSource("faq");
+    };
 
     audio.onended = () => {
-  setFaqText("");
-  setIsPlaying(false);
-  setPlayingSource("main"); // ✅ 固定回主線
-  audioRefFaq.current = null; // ✅ ❗清除舊的 FAQ audio 對象
-
-  if (onEnd) onEnd();
-};
-
-    audio.play();
+      setFaqText("");
+      setIsPlaying(false);
+      setPlayingSource("main");
+      audioRefFaq.current = null;
+      if (onEnd) onEnd();
+    };
   } catch (err) {
     console.error("❌ 播放失敗：", err);
     setFaqText("");
@@ -566,6 +552,7 @@ async function speakText(text, rate = 1.0, onEnd) {
     if (onEnd) onEnd();
   }
 }
+
 
 
 
