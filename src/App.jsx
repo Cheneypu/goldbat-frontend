@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
+const API_BASE = "https://goldbat-tts-api.onrender.com";
 
 
 const guideProjects = {
