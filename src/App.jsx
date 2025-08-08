@@ -517,10 +517,36 @@ async function speakText(text, rate = 1.0, onEnd) {
     audioRefFaq.current = audio;
 
     audio.onplay = () => {
-      setFaqText(text);
-      setIsPlaying(true);
-      setPlayingSource("faq");
-    };
+  setIsPlaying(true);
+  setPlayingSource("faq");
+
+  const fullText = text;
+  const totalDuration = audio.duration || 6; // fallback 預估 6 秒
+  const minSegmentLength = 15; // 超過幾個字才切分
+  const splitRegex = /(?<=[，、。！？；])/g; // 以標點為切句點
+
+  // 分段：長句就切，短句就整段顯示
+  const segments = fullText.length > minSegmentLength
+    ? fullText.split(splitRegex).map(s => s.trim()).filter(Boolean)
+    : [fullText];
+
+  const totalChars = segments.reduce((sum, seg) => sum + seg.length, 0);
+
+  let currentIndex = 0;
+  function showNextSegment() {
+    if (currentIndex >= segments.length) return;
+
+    const segment = segments[currentIndex];
+    const segmentDuration = (segment.length / totalChars) * totalDuration * 1000;
+
+    setFaqText(segment);
+    currentIndex++;
+
+    setTimeout(showNextSegment, segmentDuration);
+  }
+
+  showNextSegment();
+};
 
     audio.onended = () => {
   setFaqText("");
