@@ -362,7 +362,10 @@ if (key === "危機與保育") {
   if (!currentProject) return;
 
   const checkSubtitle = () => {
-    if (!isPlaying) return; // ✅ 播放結束後停止背景切換
+    if (!isPlaying) {
+      rafRef.current = requestAnimationFrame(checkSubtitle);
+      return; 
+    }
     const audio = audioRef.current;
     const currentTime = audio ? audio.currentTime : 0;
     const subs = guideProjects[currentProject].subtitles;
