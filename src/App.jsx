@@ -484,7 +484,7 @@ else if (
 
   rafRef.current = requestAnimationFrame(checkSubtitle);
   return () => cancelAnimationFrame(rafRef.current);
-}, [currentProject, faqText, isNightMode, isFlowerMode, customBg]);
+}, [currentProject, faqText, isNightMode, isFlowerMode, customBg, isPlaying]);
 
 
 
