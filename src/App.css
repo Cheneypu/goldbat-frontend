@@ -27,6 +27,7 @@ body {
   z-index: 1;
   pointer-events: none;
   user-select: none;
+  transition: opacity 80ms linear;
 }
 
 /* 主要容器 */
