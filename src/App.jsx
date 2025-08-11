@@ -155,7 +155,7 @@ const [batClosedImgLoaded, setBatClosedImgLoaded] = useState(false);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const introBg = "/media/bg.png";
+  const introBg = "/media/bg3.png";
   const introVideo = isPortrait ? "media/bat-portrait-v2.mp4" : "/media/bat-landscape.mp4";
   const introAudio = "/media/環境音.mp3";
 
@@ -212,7 +212,7 @@ useEffect(() => {
 
 useEffect(() => {
   // 預先載入 bg.png 並設為背景（解決閃圖）
-  setBodyBackground("/media/bg.png");
+  setBodyBackground("/media/bg3.png");
 }, []);
 
 useEffect(() => {
@@ -698,7 +698,7 @@ async function speakText(text, rate = 1.0, onEnd) {
               className="dropdown-button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              單件介紹 🔽
+              單元列表 🔽
             </button>
             {isDropdownOpen && (
               <div className="dropdown-menu">
