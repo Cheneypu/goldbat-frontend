@@ -166,6 +166,8 @@ const [batClosedImgLoaded, setBatClosedImgLoaded] = useState(false);
   const audioRef = useRef(null);
   const rafRef = useRef(null);
 
+  
+
   const projectKeys = Object.keys(guideProjects);
   const firstProjectKey = projectKeys[0];
 
@@ -650,20 +652,44 @@ async function speakText(text, rate = 1.0, onEnd) {
 
       {!showReady && !showIntro && (
         <>
-          <img
-  src={
-    (faqText || currentText)
-      ? (batMouthOpen ? "/media/bat.png" : "/media/bat-closed.png")
-      : "/media/bat-closed.png"
-  }
-  alt="黃金蝙蝠"
-  className="bat-img"
-/>
-{(faqText || currentText) && (
-      <div className="subtitle-display">
-        <p>{faqText || currentText}</p>
-      </div>
-    )}
+          {(() => {
+  const hasSpeech = Boolean(faqText || currentText);
+  const showOpen = hasSpeech && batMouthOpen && batImgLoaded;          // 只有在開口圖載入好才顯示
+  const showClosed = !hasSpeech || !batMouthOpen || !batImgLoaded;     // 其他情況顯示閉口（安全底圖）
+
+  return (
+    <>
+      {/* 閉口層：當成安全底圖，優先顯示 */}
+      <img
+        src="/media/bat-closed.png"
+        alt="黃金蝙蝠-閉口"
+        className="bat-img"
+        style={{ opacity: showClosed ? 1 : 0 }}
+        loading="eager"
+        decoding="async"
+        draggable="false"
+      />
+
+      {/* 開口層：只有在需要時且圖片已載入才淡入 */}
+      <img
+        src="/media/bat.png"
+        alt="黃金蝙蝠-開口"
+        className="bat-img"
+        style={{ opacity: showOpen ? 1 : 0 }}
+        loading="eager"
+        decoding="async"
+        draggable="false"
+      />
+
+      {hasSpeech && (
+        <div className="subtitle-display">
+          <p>{faqText || currentText}</p>
+        </div>
+      )}
+    </>
+  );
+})()}
+
 
 
 
