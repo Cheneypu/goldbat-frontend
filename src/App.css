@@ -433,7 +433,7 @@ body {
   .faq-popup input {
     font-size: 0.98rem;
     height: 32px;
-    margin-right: 10px;        /* ✅ 在右側留出空間 */
+    margin-right: 8px;        /* ✅ 在右側留出空間 */
     width: calc(100% - 100px); /* ✅ 限制寬度，避免壓到送出或 X */
   }
   .faq-fab {
@@ -449,7 +449,7 @@ body {
     height: 32px;
     min-width: 54px;
     padding: 0 10px;
-    margin-left: -8px;
+    margin-left: -10px;
   }
   .faq-close {
     width: 18px;
