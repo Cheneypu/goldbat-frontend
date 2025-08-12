@@ -449,7 +449,7 @@ body {
     height: 32px;
     min-width: 54px;
     padding: 0 10px;
-    margin-left: -8;
+    margin-left: -8px;
   }
   .faq-close {
     width: 18px;
