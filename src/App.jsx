@@ -289,7 +289,7 @@ useEffect(() => {
 
   // ✅ 根據新段落切換背景（開頭立即切）
 
-if (key === "黃金鼠尾蝠是誰") {
+if (key === "黃金鼠耳蝠是誰") {
   setBodyBackground("/media/bg3.png");
 }
 
