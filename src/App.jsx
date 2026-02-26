@@ -4,7 +4,7 @@ const API_BASE = "https://goldbat-tts-api.onrender.com";
 
 
 const guideProjects = {
-  "黃金鼠尾蝠是誰": {
+  "黃金鼠耳蝠是誰": {
     audioUrl: "https://my-tts-audio.s3.ap-northeast-1.amazonaws.com/goldbat-intro-0.9.mp3",
     subtitles: [
       
@@ -460,7 +460,7 @@ else if (
 
     // ✅ 「晚上才會出來活動喔」→ 切夜晚背景
     if (
-      currentProject === "黃金鼠尾蝠是誰" &&
+      currentProject === "黃金鼠耳蝠是誰" &&
       current?.text === "晚上才會出來活動喔" &&
       !isNightMode
     ) {
@@ -571,7 +571,7 @@ async function speakText(text, rate = 1.0, onEnd) {
   // 新增這行：播放結束時清空 customBg
   setCustomBg(null);
 
-  if (currentProject === "黃金鼠尾蝠是誰" && isNightMode) {
+  if (currentProject === "黃金鼠耳蝠是誰" && isNightMode) {
     setIsNightMode(false);
   }
 
